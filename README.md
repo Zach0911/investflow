@@ -33,6 +33,23 @@ InvestFlow gives agents a stricter operating system:
 | `dialectic-investment-decision` | Pressure-tests buy, hold, reduce, avoid, hedge, or compare decisions. |
 | `postmortem` | Reviews decisions after outcomes are known. |
 
+## Use Cases
+
+InvestFlow is designed for investment research scenarios where an AI agent needs discipline before producing a conclusion.
+
+| Scenario | Example Question | Suggested Flow |
+|---|---|---|
+| Clarify a vague stock question | "Can I still buy this stock?" | `investment-briefing` -> `company-research` -> `risk-review` |
+| Research a company | "Help me understand this company's business quality." | `company-research` -> `thesis-builder` |
+| Build an investment thesis | "What is the investable thesis for this company?" | `company-research` -> `thesis-builder` -> `risk-review` |
+| Check valuation risk | "Is this ETF or stock expensive now?" | `valuation-check` -> `risk-review` |
+| Review a losing position | "I am down 25%. Should I add more?" | `investment-briefing` -> `risk-review` -> `dialectic-investment-decision` |
+| Review portfolio concentration | "My technology exposure is too high. Should I reduce it?" | `risk-review` -> `dialectic-investment-decision` |
+| Compare two assets | "Which is more suitable for my long-term plan?" | `investment-briefing` -> `valuation-check` -> `risk-review` |
+| Review a past decision | "Was this investment mistake avoidable?" | `postmortem` |
+
+These flows are research workflows, not trading commands. If current market data matters, the agent should verify and cite the data source and timestamp.
+
 ## Repository Layout
 
 ```text

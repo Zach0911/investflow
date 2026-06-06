@@ -33,6 +33,23 @@ InvestFlow 为投资 Agent 提供一套更严格的工作方式：
 | `dialectic-investment-decision` | 对买入、持有、加仓、减仓、回避、对冲或比较决策进行压测。 |
 | `postmortem` | 对已有投资结果进行复盘。 |
 
+## 使用场景
+
+InvestFlow 适合用于需要 AI Agent 先完成研究流程、再输出判断的投资研究场景。
+
+| 场景 | 典型问题 | 建议流程 |
+|---|---|---|
+| 澄清模糊股票问题 | “这个股票还能买吗？” | `investment-briefing` -> `company-research` -> `risk-review` |
+| 研究一家公司 | “帮我看看这家公司的业务质量。” | `company-research` -> `thesis-builder` |
+| 构建投资 thesis | “这个公司真正可投资的逻辑是什么？” | `company-research` -> `thesis-builder` -> `risk-review` |
+| 检查估值风险 | “这个 ETF / 股票现在贵不贵？” | `valuation-check` -> `risk-review` |
+| 复盘亏损持仓 | “我已经亏了 25%，要不要补仓？” | `investment-briefing` -> `risk-review` -> `dialectic-investment-decision` |
+| 审查组合集中度 | “我科技股仓位太高，要不要降一点？” | `risk-review` -> `dialectic-investment-decision` |
+| 比较两个资产 | “哪个更适合我的长期计划？” | `investment-briefing` -> `valuation-check` -> `risk-review` |
+| 复盘历史决策 | “这次投资错误本来能避免吗？” | `postmortem` |
+
+这些流程是研究工作流，不是交易指令。如果判断依赖当前行情、估值、财报、新闻或政策信息，Agent 应先核验数据来源和时间。
+
 ## 项目结构
 
 ```text
