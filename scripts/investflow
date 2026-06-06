@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 import argparse
+import csv
+import html
 import json
 import re
 import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 
@@ -14,6 +17,9 @@ RESOURCE_DIRS = {
     "templates": ROOT / "templates",
     "examples": ROOT / "examples",
 }
+
+DATA_SOURCES = ROOT / "data" / "sources.json"
+PACKS_DIR = ROOT / "packs" / "community"
 
 TEMPLATE_MAP = {
     "brief": "research-brief.md",
@@ -47,6 +53,177 @@ def list_items(kind):
     return sorted(relative(path) for path in base.glob("*.md"))
 
 
+def load_data_sources():
+    if not DATA_SOURCES.exists():
+        return []
+    payload = json.loads(DATA_SOURCES.read_text(encoding="utf-8"))
+    return payload.get("sources", [])
+
+
+def find_data_source(source_id):
+    for source in load_data_sources():
+        if source.get("id") == source_id:
+            return source
+    return None
+
+
+def resolve_registered_data_path(source):
+    raw_path = source.get("path", "")
+    data_path = (ROOT / raw_path).resolve()
+    root = ROOT.resolve()
+    if root != data_path and root not in data_path.parents:
+        raise ValueError("registered data path escapes project root")
+    if not data_path.exists():
+        raise FileNotFoundError(f"registered data file not found: {raw_path}")
+    return data_path
+
+
+def read_data_payload(source):
+    data_path = resolve_registered_data_path(source)
+    source_type = source.get("type")
+    if source_type == "json":
+        return json.loads(data_path.read_text(encoding="utf-8"))
+    if source_type == "csv":
+        with data_path.open(newline="", encoding="utf-8") as handle:
+            return list(csv.DictReader(handle))
+    raise ValueError(f"unsupported data source type: {source_type}")
+
+
+def data_error(args, message):
+    payload = {"ok": False, "error": message}
+    if args.json:
+        print_json(payload)
+    else:
+        print(message, file=sys.stderr)
+    return 1
+
+
+def markdown_to_html(markdown):
+    lines = markdown.splitlines()
+    out = []
+    in_list = False
+    in_code = False
+    code_lines = []
+
+    def close_list():
+        nonlocal in_list
+        if in_list:
+            out.append("</ul>")
+            in_list = False
+
+    for line in lines:
+        if line.startswith("```"):
+            if in_code:
+                out.append("<pre><code>" + html.escape("\n".join(code_lines)) + "</code></pre>")
+                code_lines = []
+                in_code = False
+            else:
+                close_list()
+                in_code = True
+            continue
+        if in_code:
+            code_lines.append(line)
+            continue
+
+        stripped = line.strip()
+        if not stripped:
+            close_list()
+            continue
+        if stripped.startswith("#"):
+            close_list()
+            level = min(len(stripped) - len(stripped.lstrip("#")), 6)
+            text = stripped[level:].strip()
+            out.append(f"<h{level}>{html.escape(text)}</h{level}>")
+        elif stripped.startswith("- "):
+            if not in_list:
+                out.append("<ul>")
+                in_list = True
+            out.append(f"<li>{html.escape(stripped[2:].strip())}</li>")
+        else:
+            close_list()
+            out.append(f"<p>{html.escape(stripped)}</p>")
+
+    close_list()
+    if in_code:
+        out.append("<pre><code>" + html.escape("\n".join(code_lines)) + "</code></pre>")
+    return "\n".join(out)
+
+
+def validate_report_text(text):
+    missing = [section for section in REQUIRED_REPORT_SECTIONS if section not in text]
+    violations = find_standalone_buy_sell(text)
+    return missing, violations
+
+
+def render_report_to_html(markdown, source_name):
+    generated_at = datetime.now(timezone.utc).isoformat()
+    body = markdown_to_html(markdown)
+    return f"""<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>InvestFlow Report</title>
+  <style>
+    body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 880px; margin: 40px auto; padding: 0 20px; line-height: 1.65; }}
+    .disclaimer {{ border-top: 1px solid #ddd; margin-top: 40px; padding-top: 16px; color: #555; }}
+    code, pre {{ background: #f6f8fa; }}
+    pre {{ padding: 12px; overflow-x: auto; }}
+  </style>
+</head>
+<body>
+  <header>
+    <p><strong>InvestFlow</strong> report generated from {html.escape(source_name)}</p>
+    <p>Generated at: {html.escape(generated_at)}</p>
+  </header>
+  <main>
+{body}
+  </main>
+  <section class="disclaimer">
+    <p><strong>Disclaimer:</strong> InvestFlow output is for research workflow demonstration only and is not investment advice.</p>
+  </section>
+</body>
+</html>
+"""
+
+
+def list_packs():
+    if not PACKS_DIR.exists():
+        return []
+    packs = []
+    for pack_dir in sorted(path for path in PACKS_DIR.iterdir() if path.is_dir()):
+        manifest = pack_dir / "pack.json"
+        if manifest.exists():
+            payload = json.loads(manifest.read_text(encoding="utf-8"))
+            packs.append(
+                {
+                    "name": payload.get("name", pack_dir.name),
+                    "path": relative(pack_dir),
+                    "display_name": payload.get("display_name", ""),
+                    "version": payload.get("version", ""),
+                }
+            )
+    return packs
+
+
+def validate_pack_dir(pack_dir):
+    manifest = pack_dir / "pack.json"
+    errors = []
+    if not manifest.exists():
+        return {"ok": False, "name": pack_dir.name, "errors": ["missing pack.json"]}
+    payload = json.loads(manifest.read_text(encoding="utf-8"))
+    required = ["name", "display_name", "description", "version", "author", "license", "skills", "boundaries"]
+    for field in required:
+        if field not in payload:
+            errors.append(f"missing field: {field}")
+    boundaries = payload.get("boundaries", [])
+    if "not_investment_advice" not in boundaries:
+        errors.append("missing boundary: not_investment_advice")
+    forbidden = {"trade_execution", "brokerage_write", "place_order"}
+    if forbidden.intersection(set(boundaries)):
+        errors.append("forbidden trading boundary declared")
+    return {"ok": not errors, "name": payload.get("name", pack_dir.name), "errors": errors}
+
+
 def command_doctor(args):
     payload = {
         "ok": True,
@@ -56,6 +233,10 @@ def command_doctor(args):
         "examples": len(list_items("examples")),
         "plugin_manifest": (ROOT / ".codex-plugin" / "plugin.json").exists(),
         "codex_installer": (ROOT / "scripts" / "install-codex-skills.sh").exists(),
+        "data_sources": len(load_data_sources()),
+        "mcp_manifest": (ROOT / ".mcp.json").exists(),
+        "mcp_server": (ROOT / "scripts" / "investflow-mcp").exists(),
+        "community_packs": len(list_packs()),
     }
     payload["ok"] = all(
         [
@@ -64,6 +245,10 @@ def command_doctor(args):
             payload["examples"] >= 7,
             payload["plugin_manifest"],
             payload["codex_installer"],
+            payload["data_sources"] >= 2,
+            payload["mcp_manifest"],
+            payload["mcp_server"],
+            payload["community_packs"] >= 1,
         ]
     )
     if args.json:
@@ -77,6 +262,10 @@ def command_doctor(args):
         print(f"examples: {payload['examples']}")
         print(f"plugin_manifest: {payload['plugin_manifest']}")
         print(f"codex_installer: {payload['codex_installer']}")
+        print(f"data_sources: {payload['data_sources']}")
+        print(f"mcp_manifest: {payload['mcp_manifest']}")
+        print(f"mcp_server: {payload['mcp_server']}")
+        print(f"community_packs: {payload['community_packs']}")
     return 0 if payload["ok"] else 1
 
 
@@ -132,8 +321,7 @@ def command_validate(args):
         return 1
 
     text = report.read_text(encoding="utf-8")
-    missing = [section for section in REQUIRED_REPORT_SECTIONS if section not in text]
-    violations = find_standalone_buy_sell(text)
+    missing, violations = validate_report_text(text)
     payload = {
         "ok": not missing and not violations,
         "file": str(report),
@@ -165,6 +353,100 @@ def command_install(args):
     return completed.returncode
 
 
+def command_data_list(args):
+    sources = load_data_sources()
+    if args.json:
+        print_json({"sources": sources})
+    else:
+        for source in sources:
+            marker = "sample" if source.get("sample") else "live"
+            print(f"{source['id']}\t{source.get('type', '')}\t{marker}\t{source.get('as_of', '')}")
+    return 0
+
+
+def command_data_show(args):
+    source = find_data_source(args.source_id)
+    if not source:
+        return data_error(args, "unknown data source")
+    if args.json:
+        print_json(source)
+    else:
+        for key in ["id", "name", "type", "path", "description", "as_of", "sample", "read_only"]:
+            print(f"{key}: {source.get(key)}")
+    return 0
+
+
+def command_data_read(args):
+    source = find_data_source(args.source_id)
+    if not source:
+        return data_error(args, "unknown data source")
+    try:
+        data = read_data_payload(source)
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        return data_error(args, str(exc))
+    payload = {
+        "ok": True,
+        "source": source,
+        "as_of": source.get("as_of"),
+        "sample": bool(source.get("sample")),
+        "data": data,
+    }
+    if args.json:
+        print_json(payload)
+    else:
+        print_json(payload)
+    return 0
+
+
+def command_render(args):
+    source = Path(args.file)
+    if not source.exists():
+        print(f"Missing file: {source}", file=sys.stderr)
+        return 1
+    markdown = source.read_text(encoding="utf-8")
+    missing, violations = validate_report_text(markdown)
+    if (missing or violations) and not args.force:
+        print(f"Refusing to render invalid report: {source}", file=sys.stderr)
+        for section in missing:
+            print(f"missing: {section}", file=sys.stderr)
+        for violation in violations:
+            print(f"violation: {violation}", file=sys.stderr)
+        return 1
+    rendered = render_report_to_html(markdown, str(source))
+    if args.output:
+        output = Path(args.output).expanduser()
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(rendered, encoding="utf-8")
+        print(f"Wrote {output}")
+    else:
+        print(rendered)
+    return 0
+
+
+def command_pack_list(args):
+    packs = list_packs()
+    if args.json:
+        print_json({"packs": packs})
+    else:
+        for pack in packs:
+            print(f"{pack['name']}\t{pack['version']}\t{pack['path']}")
+    return 0
+
+
+def command_pack_validate(args):
+    result = validate_pack_dir((ROOT / args.path).resolve() if not Path(args.path).is_absolute() else Path(args.path))
+    if args.json:
+        print_json(result)
+    else:
+        if result["ok"]:
+            print(f"Pack passed: {result['name']}")
+        else:
+            print(f"Pack failed: {result['name']}")
+            for error in result["errors"]:
+                print(f"error: {error}")
+    return 0 if result["ok"] else 1
+
+
 def build_parser():
     parser = argparse.ArgumentParser(
         prog="investflow",
@@ -194,6 +476,31 @@ def build_parser():
     install = subparsers.add_parser("install", help="Install InvestFlow integrations.")
     install.add_argument("target", choices=["codex"])
     install.set_defaults(func=command_install)
+
+    data = subparsers.add_parser("data", help="List and read registered read-only data sources.")
+    data_subparsers = data.add_subparsers(dest="data_command", required=True)
+    data_list = data_subparsers.add_parser("list", help="List registered data sources.")
+    data_list.set_defaults(func=command_data_list)
+    data_show = data_subparsers.add_parser("show", help="Show data source metadata.")
+    data_show.add_argument("source_id")
+    data_show.set_defaults(func=command_data_show)
+    data_read = data_subparsers.add_parser("read", help="Read a registered data source.")
+    data_read.add_argument("source_id")
+    data_read.set_defaults(func=command_data_read)
+
+    render = subparsers.add_parser("render", help="Render a Markdown report to HTML.")
+    render.add_argument("file")
+    render.add_argument("--output", "-o", help="Write HTML to this file.")
+    render.add_argument("--force", action="store_true", help="Render even if report validation fails.")
+    render.set_defaults(func=command_render)
+
+    pack = subparsers.add_parser("pack", help="List and validate community skill packs.")
+    pack_subparsers = pack.add_subparsers(dest="pack_command", required=True)
+    pack_list = pack_subparsers.add_parser("list", help="List community skill packs.")
+    pack_list.set_defaults(func=command_pack_list)
+    pack_validate = pack_subparsers.add_parser("validate", help="Validate a community skill pack.")
+    pack_validate.add_argument("path")
+    pack_validate.set_defaults(func=command_pack_validate)
 
     return parser
 

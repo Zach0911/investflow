@@ -1,0 +1,24 @@
+{
+  "sources": [
+    {
+      "id": "sample-market-snapshot",
+      "name": "Sample Market Snapshot",
+      "type": "json",
+      "path": "data/fixtures/sample-market-snapshot.json",
+      "description": "Fictional market snapshot for connector demonstrations.",
+      "as_of": "2026-06-06",
+      "sample": true,
+      "read_only": true
+    },
+    {
+      "id": "sample-company-profile",
+      "name": "Sample Company Profile",
+      "type": "json",
+      "path": "data/fixtures/sample-company-profile.json",
+      "description": "Fictional company profile for research workflow demonstrations.",
+      "as_of": "2026-06-06",
+      "sample": true,
+      "read_only": true
+    }
+  ]
+}

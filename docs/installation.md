@@ -63,6 +63,23 @@ The script only updates InvestFlow's own skill directories and does not delete u
 ./scripts/investflow list skills
 ./scripts/investflow new thesis --output work/thesis.md
 ./scripts/investflow validate work/thesis.md
+./scripts/investflow data list
+./scripts/investflow render work/thesis.md --output work/thesis.html
+./scripts/investflow pack list
 ```
 
 The CLI is local and offline. It does not fetch market data or produce investment recommendations.
+
+## MCP Server
+
+The local MCP manifest is:
+
+```text
+.mcp.json
+```
+
+It points to:
+
+```text
+./scripts/investflow-mcp
+```

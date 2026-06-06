@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "investflow": {
+      "command": "./scripts/investflow-mcp",
+      "args": []
+    }
+  }
+}

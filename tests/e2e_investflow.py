@@ -56,17 +56,22 @@ def main() -> None:
         fail("plugin name must be investflow")
     if plugin.get("skills") != "./skills/":
         fail("plugin must expose ./skills/")
-    if "mcpServers" in plugin or "apps" in plugin:
-        fail("plugin must not claim MCP/apps before those files exist")
+    if plugin.get("mcpServers") != "./.mcp.json":
+        fail("plugin must expose ./.mcp.json")
+    if "apps" in plugin:
+        fail("plugin must not claim apps before those files exist")
 
-    require("README.md", r"skills framework", r"not investment advice", r"Use Cases", r"Review a losing position", r"portfolio concentration", r"\./scripts/investflow doctor", r"Phase 2 CLI Requirements", r"Decision Labels", r"Phase 2: CLI", r"Phase 3: MCP")
+    require("README.md", r"skills framework", r"not investment advice", r"Use Cases", r"Review a losing position", r"portfolio concentration", r"\./scripts/investflow doctor", r"\./scripts/investflow data list", r"MCP and Data Connectors", r"Phase 2 CLI Requirements", r"Decision Labels", r"Phase 2: CLI", r"Phase 3: MCP")
     require("README.md", r"README\.zh-CN\.md")
     require("README.md", r"docs/installation\.md", r"run the installer again")
-    require("README.zh-CN.md", r"InvestFlow 是一个面向投资 Agent", r"不构成投资建议", r"核心 Skills", r"使用场景", r"复盘亏损持仓", r"组合集中度", r"\./scripts/investflow doctor", r"第二阶段 CLI 需求设计文档", r"决策标签", r"README\.md")
+    require("README.zh-CN.md", r"InvestFlow 是一个面向投资 Agent", r"不构成投资建议", r"核心 Skills", r"使用场景", r"复盘亏损持仓", r"组合集中度", r"\./scripts/investflow doctor", r"\./scripts/investflow data list", r"MCP 和只读数据连接器", r"第二阶段 CLI 需求设计文档", r"决策标签", r"README\.md")
     require("README.zh-CN.md", r"docs/installation\.zh-CN\.md", r"重新运行安装脚本")
     require("docs/installation.md", r"git clone https://github.com/Zach0911/investflow.git", r"The installer copies files", r"does not delete unrelated skills")
     require("docs/installation.zh-CN.md", r"安装脚本采用复制方式", r"不会删除", r"验证项目", r"使用 CLI")
     require("docs/phase-2-cli-requirements.zh-CN.md", r"investflow doctor", r"investflow validate", r"验收标准")
+    require("docs/phase-3-mcp-data-requirements.zh-CN.md", r"investflow data read", r"scripts/investflow-mcp", r"验收标准")
+    require("docs/phase-4-report-community-requirements.zh-CN.md", r"investflow render", r"pack validate", r"验收标准")
+    require(".mcp.json", r"investflow", r"scripts/investflow-mcp")
     require("DISCLAIMER.md", r"not investment advice", r"does not execute trades", r"Users are responsible")
     require("AGENTS.md", r"Do not provide standalone buy or sell conclusions", r"Verify current data", r"Every actionable investment output must include")
     require("LICENSE", r"MIT License", r"Copyright \(c\) 2026 Zach0911")

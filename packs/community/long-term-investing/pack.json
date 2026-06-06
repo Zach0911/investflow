@@ -1,0 +1,15 @@
+{
+  "name": "long-term-investing",
+  "display_name": "Long-Term Investing",
+  "description": "A starter community pack for long-term investment research workflows.",
+  "version": "0.1.0",
+  "author": "InvestFlow contributors",
+  "license": "MIT",
+  "skills": [],
+  "boundaries": [
+    "not_investment_advice",
+    "no_trade_execution",
+    "requires_risk_review",
+    "requires_invalidation_conditions"
+  ]
+}

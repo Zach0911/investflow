@@ -57,11 +57,14 @@ investflow/
 ├── README.md
 ├── README.zh-CN.md
 ├── DISCLAIMER.md
+├── .mcp.json
 ├── .codex-plugin/
 ├── AGENTS.md
 ├── CONTRIBUTING.md
+├── data/
 ├── docs/
 ├── examples/
+├── packs/
 ├── scripts/
 ├── skills/
 │   ├── using-investflow/
@@ -104,12 +107,27 @@ InvestFlow includes a lightweight local CLI for report scaffolding and validatio
 ./scripts/investflow list skills
 ./scripts/investflow new thesis --output work/thesis.md
 ./scripts/investflow validate work/thesis.md
+./scripts/investflow data list
+./scripts/investflow data read sample-market-snapshot
+./scripts/investflow render work/thesis.md --output work/thesis.html
+./scripts/investflow pack list
 ./scripts/investflow install codex
 ```
 
 The CLI does not fetch market data, generate investment advice, or execute trades. It only works with local skills, templates, examples, and Markdown reports.
 
 See [Phase 2 CLI Requirements](docs/phase-2-cli-requirements.zh-CN.md) for command contracts and acceptance criteria.
+See [Phase 3 MCP/Data Requirements](docs/phase-3-mcp-data-requirements.zh-CN.md) and [Phase 4 Report/Community Requirements](docs/phase-4-report-community-requirements.zh-CN.md) for the read-only data, MCP, report rendering, and community pack boundaries.
+
+## MCP and Data Connectors
+
+InvestFlow includes a local MCP server manifest:
+
+```text
+.mcp.json
+```
+
+The MCP server exposes read-only tools for listing registered data sources, reading registered sample data, and rendering local Markdown reports. It does not connect to brokerages, fetch live market data, or execute trades.
 
 ## Install for Codex
 

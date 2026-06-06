@@ -57,11 +57,14 @@ investflow/
 ├── README.md
 ├── README.zh-CN.md
 ├── DISCLAIMER.md
+├── .mcp.json
 ├── .codex-plugin/
 ├── AGENTS.md
 ├── CONTRIBUTING.md
+├── data/
 ├── docs/
 ├── examples/
+├── packs/
 ├── scripts/
 ├── skills/
 │   ├── using-investflow/
@@ -104,12 +107,27 @@ InvestFlow 提供一个轻量本地 CLI，用于报告搭建和结构校验：
 ./scripts/investflow list skills
 ./scripts/investflow new thesis --output work/thesis.md
 ./scripts/investflow validate work/thesis.md
+./scripts/investflow data list
+./scripts/investflow data read sample-market-snapshot
+./scripts/investflow render work/thesis.md --output work/thesis.html
+./scripts/investflow pack list
 ./scripts/investflow install codex
 ```
 
 CLI 不获取行情数据，不生成投资建议，也不执行交易。它只处理本地 skills、templates、examples 和 Markdown 报告。
 
 命令契约和验收标准见：[第二阶段 CLI 需求设计文档](docs/phase-2-cli-requirements.zh-CN.md)。
+只读数据、MCP、报告生成和社区包边界见：[第三阶段 MCP 与只读数据连接器需求设计文档](docs/phase-3-mcp-data-requirements.zh-CN.md) 与 [第四阶段报告生成与社区技能包需求设计文档](docs/phase-4-report-community-requirements.zh-CN.md)。
+
+## MCP 和只读数据连接器
+
+InvestFlow 已包含本地 MCP server manifest：
+
+```text
+.mcp.json
+```
+
+MCP server 提供只读工具：列出注册数据源、读取注册示例数据、渲染本地 Markdown 报告。它不会连接券商账户，不获取实时行情，也不执行交易。
 
 ## 安装到 Codex
 

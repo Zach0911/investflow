@@ -1,0 +1,159 @@
+#!/usr/bin/env python3
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+CLI = ROOT / "scripts" / "investflow"
+
+
+TOOLS = [
+    {
+        "name": "investflow_list_data_sources",
+        "description": "List InvestFlow registered read-only data sources.",
+        "inputSchema": {"type": "object", "properties": {}, "additionalProperties": False},
+    },
+    {
+        "name": "investflow_read_data_source",
+        "description": "Read one InvestFlow registered read-only data source.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"source_id": {"type": "string"}},
+            "required": ["source_id"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "investflow_render_report",
+        "description": "Render a local Markdown report to HTML text.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "file": {"type": "string"},
+                "force": {"type": "boolean"},
+            },
+            "required": ["file"],
+            "additionalProperties": False,
+        },
+    },
+]
+
+
+def read_message():
+    header = b""
+    while b"\r\n\r\n" not in header:
+        chunk = sys.stdin.buffer.read(1)
+        if not chunk:
+            return None
+        header += chunk
+    header_text = header.decode("utf-8")
+    length = None
+    for line in header_text.split("\r\n"):
+        if line.lower().startswith("content-length:"):
+            length = int(line.split(":", 1)[1].strip())
+            break
+    if length is None:
+        raise ValueError("missing Content-Length header")
+    body = sys.stdin.buffer.read(length)
+    return json.loads(body.decode("utf-8"))
+
+
+def write_message(payload):
+    body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    sys.stdout.buffer.write(f"Content-Length: {len(body)}\r\n\r\n".encode("utf-8"))
+    sys.stdout.buffer.write(body)
+    sys.stdout.buffer.flush()
+
+
+def cli_json(*args):
+    result = subprocess.run(
+        [str(CLI), "--json", *args],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr.strip() or result.stdout.strip() or "InvestFlow CLI failed")
+    return json.loads(result.stdout)
+
+
+def cli_text(*args):
+    result = subprocess.run(
+        [str(CLI), *args],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr.strip() or result.stdout.strip() or "InvestFlow CLI failed")
+    return result.stdout
+
+
+def tool_result(payload):
+    return {"content": [{"type": "text", "text": json.dumps(payload, ensure_ascii=False)}]}
+
+
+def handle_tool_call(name, arguments):
+    arguments = arguments or {}
+    if name == "investflow_list_data_sources":
+        return tool_result(cli_json("data", "list"))
+    if name == "investflow_read_data_source":
+        source_id = arguments.get("source_id")
+        if not source_id:
+            raise ValueError("source_id is required")
+        return tool_result(cli_json("data", "read", source_id))
+    if name == "investflow_render_report":
+        file = arguments.get("file")
+        if not file:
+            raise ValueError("file is required")
+        command = ["render", file]
+        if arguments.get("force"):
+            command.append("--force")
+        return {"content": [{"type": "text", "text": cli_text(*command)}]}
+    raise ValueError(f"unknown tool: {name}")
+
+
+def handle(request):
+    method = request.get("method")
+    request_id = request.get("id")
+    try:
+        if method == "initialize":
+            result = {
+                "protocolVersion": "2024-11-05",
+                "serverInfo": {"name": "investflow", "version": "0.1.0"},
+                "capabilities": {"tools": {}},
+            }
+        elif method == "tools/list":
+            result = {"tools": TOOLS}
+        elif method == "tools/call":
+            params = request.get("params", {})
+            result = handle_tool_call(params.get("name"), params.get("arguments", {}))
+        elif method and method.startswith("notifications/"):
+            return None
+        else:
+            raise ValueError(f"unsupported method: {method}")
+        return {"jsonrpc": "2.0", "id": request_id, "result": result}
+    except Exception as exc:
+        return {
+            "jsonrpc": "2.0",
+            "id": request_id,
+            "error": {"code": -32000, "message": str(exc)},
+        }
+
+
+def main():
+    request = read_message()
+    if request is None:
+        return 0
+    response = handle(request)
+    if response is not None:
+        write_message(response)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
