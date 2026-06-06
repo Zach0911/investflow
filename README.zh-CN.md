@@ -75,6 +75,20 @@ investflow/
 
 如果用户没有提供标的、周期、仓位和风险承受能力，Agent 应先补问，而不是直接给出投资判断。
 
+## 安装到 Codex
+
+将项目内置 skills 安装到 Codex 本地 skill 目录：
+
+```bash
+./scripts/install-codex-skills.sh
+```
+
+默认安装到 `~/.codex/skills`。如需指定目标目录，可以使用 `CODEX_SKILLS_DIR`：
+
+```bash
+CODEX_SKILLS_DIR=/path/to/skills ./scripts/install-codex-skills.sh
+```
+
 ## 决策标签
 
 InvestFlow 避免输出单独的“买入”或“卖出”结论。请使用有边界的标签：

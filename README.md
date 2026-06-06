@@ -75,6 +75,20 @@ Use InvestFlow to analyze whether I should keep holding this ETF.
 
 If the user has not provided instrument, horizon, position, and risk tolerance, the agent should ask for those first.
 
+## Install for Codex
+
+Install the bundled skills into Codex's local skill directory:
+
+```bash
+./scripts/install-codex-skills.sh
+```
+
+By default, this installs to `~/.codex/skills`. Override the target with `CODEX_SKILLS_DIR`:
+
+```bash
+CODEX_SKILLS_DIR=/path/to/skills ./scripts/install-codex-skills.sh
+```
+
 ## Decision Labels
 
 InvestFlow avoids standalone "buy" or "sell" conclusions. Use bounded labels instead:
