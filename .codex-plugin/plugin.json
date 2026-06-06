@@ -1,0 +1,34 @@
+{
+  "name": "investflow",
+  "version": "0.1.0",
+  "description": "Open-source skills framework and research methodology for investment agents.",
+  "author": {
+    "name": "InvestFlow contributors"
+  },
+  "license": "LicenseRef-TBD",
+  "keywords": [
+    "investment",
+    "research",
+    "skills",
+    "agent",
+    "risk"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "InvestFlow",
+    "shortDescription": "Investment research skills for AI agents.",
+    "longDescription": "InvestFlow helps investment agents clarify context, build theses, check valuation, review risks, and produce auditable research outputs without presenting standalone trading commands.",
+    "developerName": "InvestFlow contributors",
+    "category": "Finance",
+    "capabilities": [
+      "Research",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use InvestFlow to brief this investment question.",
+      "Review this thesis with InvestFlow risk checks.",
+      "Run an InvestFlow postmortem on this trade."
+    ],
+    "brandColor": "#0F766E"
+  }
+}

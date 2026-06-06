@@ -1,0 +1,9 @@
+License to be selected before public release.
+
+Recommended options to evaluate:
+
+- MIT: simple and permissive.
+- Apache-2.0: permissive with explicit patent grant.
+- CC-BY-4.0: suitable for documentation-heavy content, but less common for code.
+
+Do not publish InvestFlow as an open-source project until the license is confirmed.
