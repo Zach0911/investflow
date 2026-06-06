@@ -1,0 +1,7 @@
+interface:
+  display_name: "Investment Briefing"
+  short_description: "Clarify an investment question first."
+  brand_color: "#0F766E"
+  default_prompt: "Use $investment-briefing to clarify this investment question."
+policy:
+  allow_implicit_invocation: true

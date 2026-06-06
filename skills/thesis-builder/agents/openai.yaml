@@ -1,0 +1,7 @@
+interface:
+  display_name: "Thesis Builder"
+  short_description: "Turn research into a testable thesis."
+  brand_color: "#0F766E"
+  default_prompt: "Use $thesis-builder to build a testable investment thesis."
+policy:
+  allow_implicit_invocation: true

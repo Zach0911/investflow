@@ -1,0 +1,37 @@
+name: Validate
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install ripgrep
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+
+      - name: Run project validation
+        run: ./scripts/validate.sh
+
+      - name: Validate Codex plugin manifest
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(Path(".codex-plugin/plugin.json").read_text())
+          assert manifest["name"] == "investflow"
+          assert manifest["version"] == "0.1.0"
+          assert manifest["license"] == "MIT"
+          assert manifest["skills"] == "./skills/"
+          assert "mcpServers" not in manifest
+          assert "apps" not in manifest
+          print("Codex plugin manifest passed")
+          PY

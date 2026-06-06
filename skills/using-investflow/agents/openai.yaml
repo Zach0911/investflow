@@ -1,0 +1,7 @@
+interface:
+  display_name: "Using InvestFlow"
+  short_description: "Route investment tasks to InvestFlow skills."
+  brand_color: "#0F766E"
+  default_prompt: "Use $using-investflow to route this investment research task."
+policy:
+  allow_implicit_invocation: true

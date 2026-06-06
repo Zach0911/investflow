@@ -1,0 +1,7 @@
+interface:
+  display_name: "Valuation Check"
+  short_description: "Check price against assumptions."
+  brand_color: "#0F766E"
+  default_prompt: "Use $valuation-check to review valuation risk."
+policy:
+  allow_implicit_invocation: true

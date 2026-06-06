@@ -28,6 +28,11 @@ def require(path: str, *patterns: str) -> str:
 
 
 def skill(name: str) -> str:
+    require(
+        f"skills/{name}/agents/openai.yaml",
+        rf'default_prompt: "Use \${re.escape(name)}',
+        r"allow_implicit_invocation: true",
+    )
     return require(
         f"skills/{name}/SKILL.md",
         r"^---$",
@@ -56,10 +61,15 @@ def main() -> None:
 
     require("README.md", r"skills framework", r"not investment advice", r"Use Cases", r"Review a losing position", r"portfolio concentration", r"Decision Labels", r"Phase 2: CLI", r"Phase 3: MCP")
     require("README.md", r"README\.zh-CN\.md")
+    require("README.md", r"docs/installation\.md", r"run the installer again")
     require("README.zh-CN.md", r"InvestFlow 是一个面向投资 Agent", r"不构成投资建议", r"核心 Skills", r"使用场景", r"复盘亏损持仓", r"组合集中度", r"决策标签", r"README\.md")
+    require("README.zh-CN.md", r"docs/installation\.zh-CN\.md", r"重新运行安装脚本")
+    require("docs/installation.md", r"git clone https://github.com/Zach0911/investflow.git", r"The installer copies files", r"does not delete unrelated skills")
+    require("docs/installation.zh-CN.md", r"安装脚本采用复制方式", r"不会删除", r"验证项目")
     require("DISCLAIMER.md", r"not investment advice", r"does not execute trades", r"Users are responsible")
     require("AGENTS.md", r"Do not provide standalone buy or sell conclusions", r"Verify current data", r"Every actionable investment output must include")
-    require("LICENSE", r"License to be selected before public release")
+    require("LICENSE", r"MIT License", r"Copyright \(c\) 2026 Zach0911")
+    require(".github/workflows/validate.yml", r"\./scripts/validate\.sh", r"actions/checkout@v4", r"Codex plugin manifest passed")
     require(".gitignore", r"\.DS_Store")
 
     using = skill("using-investflow")
@@ -110,6 +120,10 @@ def main() -> None:
         "examples/stock-research-example.md": ["信息不足", "标的", "周期", "仓位", "风险"],
         "examples/etf-research-example.md": ["信息不足", "跟踪指数", "费率", "流动性"],
         "examples/portfolio-review-example.md": ["信息不足", "科技股占比", "最大可接受组合回撤"],
+        "examples/losing-position-review-example.md": ["亏了 25%", "补仓", "反方最强质疑"],
+        "examples/company-to-thesis-example.md": ["Company Research to Thesis", "核心 Thesis", "失效条件"],
+        "examples/etf-long-term-review-example.md": ["ETF Long-Term Review", "持仓集中度", "复盘条件"],
+        "examples/investment-postmortem-example.md": ["Investment Postmortem", "错误来源", "下次行动规则"],
         "tests/skill-boundary-cases.md": ["Case 1", "Case 2", "Case 3", "Expected behavior"],
         "tests/e2e-scenarios.md": ["Vague stock question", "Actionable decision", "Past decision review"],
     }

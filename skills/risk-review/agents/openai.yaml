@@ -1,0 +1,7 @@
+interface:
+  display_name: "Risk Review"
+  short_description: "Challenge an investment thesis."
+  brand_color: "#0F766E"
+  default_prompt: "Use $risk-review to challenge this investment view."
+policy:
+  allow_implicit_invocation: true

@@ -76,6 +76,8 @@ investflow/
 └── tests/
 ```
 
+More complete examples are available in [`examples/`](examples/), including losing-position review, ETF long-term review, company-to-thesis research, and investment postmortems.
+
 ## Quick Start
 
 1. Pick the skill that matches the task.
@@ -106,6 +108,10 @@ By default, this installs to `~/.codex/skills`. Override the target with `CODEX_
 CODEX_SKILLS_DIR=/path/to/skills ./scripts/install-codex-skills.sh
 ```
 
+The installer copies skills rather than symlinking them. After editing `skills/`, run the installer again so Codex uses the latest version.
+
+See [Installation](docs/installation.md) for clone, update, and validation details.
+
 ## Decision Labels
 
 InvestFlow avoids standalone "buy" or "sell" conclusions. Use bounded labels instead:
@@ -129,4 +135,4 @@ Every actionable label must include assumptions, position sizing, invalidation c
 
 ## License
 
-Add an open-source license before public release.
+MIT License.

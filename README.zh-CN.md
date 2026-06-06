@@ -76,6 +76,8 @@ investflow/
 └── tests/
 ```
 
+更多完整示例见 [`examples/`](examples/)，包括亏损持仓复盘、ETF 长期持有审查、公司研究到 thesis、投资复盘等。
+
 ## 快速开始
 
 1. 选择与任务匹配的 skill。
@@ -106,6 +108,10 @@ investflow/
 CODEX_SKILLS_DIR=/path/to/skills ./scripts/install-codex-skills.sh
 ```
 
+安装脚本采用复制方式，不是软链接。修改 `skills/` 源码后，需要重新运行安装脚本，Codex 才会使用最新版本。
+
+更多克隆、更新和验证说明见：[安装说明](docs/installation.zh-CN.md)。
+
 ## 决策标签
 
 InvestFlow 避免输出单独的“买入”或“卖出”结论。请使用有边界的标签：
@@ -129,4 +135,4 @@ InvestFlow 避免输出单独的“买入”或“卖出”结论。请使用有
 
 ## 许可证
 
-正式发布前需要确认开源许可证。
+MIT License.

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Investment Postmortem"
+  short_description: "Review past investment decisions."
+  brand_color: "#0F766E"
+  default_prompt: "Use $postmortem to review this past investment decision."
+policy:
+  allow_implicit_invocation: true
