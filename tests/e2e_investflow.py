@@ -55,6 +55,8 @@ def main() -> None:
         fail("plugin must not claim MCP/apps before those files exist")
 
     require("README.md", r"skills framework", r"not investment advice", r"Decision Labels", r"Phase 2: CLI", r"Phase 3: MCP")
+    require("README.md", r"README\.zh-CN\.md")
+    require("README.zh-CN.md", r"InvestFlow 是一个面向投资 Agent", r"不构成投资建议", r"核心 Skills", r"决策标签", r"README\.md")
     require("DISCLAIMER.md", r"not investment advice", r"does not execute trades", r"Users are responsible")
     require("AGENTS.md", r"Do not provide standalone buy or sell conclusions", r"Verify current data", r"Every actionable investment output must include")
     require("LICENSE", r"License to be selected before public release")

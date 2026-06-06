@@ -1,5 +1,7 @@
 # InvestFlow
 
+[English](README.md) | [中文](README.zh-CN.md)
+
 InvestFlow is an open-source skills framework and research methodology for investment agents.
 
 It helps AI agents stop answering "should I buy this?" too early. Instead, agents must clarify the investment question, check the data basis, build a thesis, challenge it with risks, and produce a reviewable research output.
@@ -36,6 +38,7 @@ InvestFlow gives agents a stricter operating system:
 ```text
 investflow/
 ├── README.md
+├── README.zh-CN.md
 ├── DISCLAIMER.md
 ├── .codex-plugin/
 ├── AGENTS.md
