@@ -94,6 +94,23 @@ Use InvestFlow to analyze whether I should keep holding this ETF.
 
 If the user has not provided instrument, horizon, position, and risk tolerance, the agent should ask for those first.
 
+## CLI
+
+InvestFlow includes a lightweight local CLI for report scaffolding and validation:
+
+```bash
+./scripts/investflow --help
+./scripts/investflow doctor
+./scripts/investflow list skills
+./scripts/investflow new thesis --output work/thesis.md
+./scripts/investflow validate work/thesis.md
+./scripts/investflow install codex
+```
+
+The CLI does not fetch market data, generate investment advice, or execute trades. It only works with local skills, templates, examples, and Markdown reports.
+
+See [Phase 2 CLI Requirements](docs/phase-2-cli-requirements.zh-CN.md) for command contracts and acceptance criteria.
+
 ## Install for Codex
 
 Install the bundled skills into Codex's local skill directory:

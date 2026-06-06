@@ -59,13 +59,14 @@ def main() -> None:
     if "mcpServers" in plugin or "apps" in plugin:
         fail("plugin must not claim MCP/apps before those files exist")
 
-    require("README.md", r"skills framework", r"not investment advice", r"Use Cases", r"Review a losing position", r"portfolio concentration", r"Decision Labels", r"Phase 2: CLI", r"Phase 3: MCP")
+    require("README.md", r"skills framework", r"not investment advice", r"Use Cases", r"Review a losing position", r"portfolio concentration", r"\./scripts/investflow doctor", r"Phase 2 CLI Requirements", r"Decision Labels", r"Phase 2: CLI", r"Phase 3: MCP")
     require("README.md", r"README\.zh-CN\.md")
     require("README.md", r"docs/installation\.md", r"run the installer again")
-    require("README.zh-CN.md", r"InvestFlow 是一个面向投资 Agent", r"不构成投资建议", r"核心 Skills", r"使用场景", r"复盘亏损持仓", r"组合集中度", r"决策标签", r"README\.md")
+    require("README.zh-CN.md", r"InvestFlow 是一个面向投资 Agent", r"不构成投资建议", r"核心 Skills", r"使用场景", r"复盘亏损持仓", r"组合集中度", r"\./scripts/investflow doctor", r"第二阶段 CLI 需求设计文档", r"决策标签", r"README\.md")
     require("README.zh-CN.md", r"docs/installation\.zh-CN\.md", r"重新运行安装脚本")
     require("docs/installation.md", r"git clone https://github.com/Zach0911/investflow.git", r"The installer copies files", r"does not delete unrelated skills")
-    require("docs/installation.zh-CN.md", r"安装脚本采用复制方式", r"不会删除", r"验证项目")
+    require("docs/installation.zh-CN.md", r"安装脚本采用复制方式", r"不会删除", r"验证项目", r"使用 CLI")
+    require("docs/phase-2-cli-requirements.zh-CN.md", r"investflow doctor", r"investflow validate", r"验收标准")
     require("DISCLAIMER.md", r"not investment advice", r"does not execute trades", r"Users are responsible")
     require("AGENTS.md", r"Do not provide standalone buy or sell conclusions", r"Verify current data", r"Every actionable investment output must include")
     require("LICENSE", r"MIT License", r"Copyright \(c\) 2026 Zach0911")

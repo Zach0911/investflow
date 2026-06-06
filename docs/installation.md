@@ -55,3 +55,14 @@ The script only updates InvestFlow's own skill directories and does not delete u
 ```bash
 ./scripts/validate.sh
 ```
+
+## Use the CLI
+
+```bash
+./scripts/investflow doctor
+./scripts/investflow list skills
+./scripts/investflow new thesis --output work/thesis.md
+./scripts/investflow validate work/thesis.md
+```
+
+The CLI is local and offline. It does not fetch market data or produce investment recommendations.

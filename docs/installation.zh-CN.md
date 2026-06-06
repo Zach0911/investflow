@@ -55,3 +55,14 @@ CODEX_SKILLS_DIR=/path/to/skills ./scripts/install-codex-skills.sh
 ```bash
 ./scripts/validate.sh
 ```
+
+## 使用 CLI
+
+```bash
+./scripts/investflow doctor
+./scripts/investflow list skills
+./scripts/investflow new thesis --output work/thesis.md
+./scripts/investflow validate work/thesis.md
+```
+
+CLI 是本地离线工具，不获取行情数据，也不生成投资建议。

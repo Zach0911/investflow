@@ -1,0 +1,208 @@
+#!/usr/bin/env python3
+import argparse
+import json
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+RESOURCE_DIRS = {
+    "skills": ROOT / "skills",
+    "templates": ROOT / "templates",
+    "examples": ROOT / "examples",
+}
+
+TEMPLATE_MAP = {
+    "brief": "research-brief.md",
+    "thesis": "thesis-report.md",
+    "risk-review": "risk-review.md",
+    "postmortem": "postmortem.md",
+}
+
+REQUIRED_REPORT_SECTIONS = [
+    "## 投资判断",
+    "## 关键依据",
+    "## 反方最强质疑",
+    "## 主要风险",
+    "## 仓位与风控",
+    "## 最终结论",
+]
+
+
+def print_json(payload):
+    print(json.dumps(payload, ensure_ascii=False, indent=2))
+
+
+def relative(path):
+    return str(path.relative_to(ROOT))
+
+
+def list_items(kind):
+    base = RESOURCE_DIRS[kind]
+    if kind == "skills":
+        return sorted(path.name for path in base.iterdir() if (path / "SKILL.md").exists())
+    return sorted(relative(path) for path in base.glob("*.md"))
+
+
+def command_doctor(args):
+    payload = {
+        "ok": True,
+        "root": str(ROOT),
+        "skills": len(list_items("skills")),
+        "templates": len(list_items("templates")),
+        "examples": len(list_items("examples")),
+        "plugin_manifest": (ROOT / ".codex-plugin" / "plugin.json").exists(),
+        "codex_installer": (ROOT / "scripts" / "install-codex-skills.sh").exists(),
+    }
+    payload["ok"] = all(
+        [
+            payload["skills"] >= 8,
+            payload["templates"] >= 4,
+            payload["examples"] >= 7,
+            payload["plugin_manifest"],
+            payload["codex_installer"],
+        ]
+    )
+    if args.json:
+        print_json(payload)
+    else:
+        status = "ok" if payload["ok"] else "failed"
+        print(f"InvestFlow doctor: {status}")
+        print(f"root: {payload['root']}")
+        print(f"skills: {payload['skills']}")
+        print(f"templates: {payload['templates']}")
+        print(f"examples: {payload['examples']}")
+        print(f"plugin_manifest: {payload['plugin_manifest']}")
+        print(f"codex_installer: {payload['codex_installer']}")
+    return 0 if payload["ok"] else 1
+
+
+def command_list(args):
+    items = list_items(args.kind)
+    if args.json:
+        print_json({"kind": args.kind, "items": items})
+    else:
+        for item in items:
+            print(item)
+    return 0
+
+
+def command_new(args):
+    template_name = TEMPLATE_MAP[args.kind]
+    template_path = ROOT / "templates" / template_name
+    content = template_path.read_text(encoding="utf-8")
+
+    if not args.output:
+        print(content, end="" if content.endswith("\n") else "\n")
+        return 0
+
+    output = Path(args.output).expanduser()
+    if output.exists() and not args.force:
+        print(f"Refusing to overwrite: {output} already exists. Use --force.", file=sys.stderr)
+        return 1
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(content, encoding="utf-8")
+    print(f"Wrote {output}")
+    return 0
+
+
+def find_standalone_buy_sell(text):
+    violations = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        normalized = stripped.strip("#").strip()
+        if normalized in {"买入", "卖出"}:
+            violations.append("standalone buy/sell conclusion")
+            break
+    return violations
+
+
+def command_validate(args):
+    report = Path(args.file)
+    if not report.exists():
+        payload = {"ok": False, "file": str(report), "missing": [], "violations": ["file not found"]}
+        if args.json:
+            print_json(payload)
+        else:
+            print(f"Missing file: {report}", file=sys.stderr)
+        return 1
+
+    text = report.read_text(encoding="utf-8")
+    missing = [section for section in REQUIRED_REPORT_SECTIONS if section not in text]
+    violations = find_standalone_buy_sell(text)
+    payload = {
+        "ok": not missing and not violations,
+        "file": str(report),
+        "missing": missing,
+        "violations": violations,
+    }
+
+    if args.json:
+        print_json(payload)
+    else:
+        if payload["ok"]:
+            print(f"Report passed: {report}")
+        else:
+            print(f"Report failed: {report}")
+            for section in missing:
+                print(f"missing: {section}")
+            for violation in violations:
+                print(f"violation: {violation}")
+
+    return 0 if payload["ok"] else 1
+
+
+def command_install(args):
+    if args.target != "codex":
+        print(f"Unknown install target: {args.target}", file=sys.stderr)
+        return 1
+    installer = ROOT / "scripts" / "install-codex-skills.sh"
+    completed = subprocess.run([str(installer)], cwd=ROOT, text=True)
+    return completed.returncode
+
+
+def build_parser():
+    parser = argparse.ArgumentParser(
+        prog="investflow",
+        description="InvestFlow CLI for report scaffolding and validation.",
+    )
+    parser.add_argument("--json", action="store_true", help="Output stable JSON where supported.")
+
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    doctor = subparsers.add_parser("doctor", help="Check local InvestFlow project status.")
+    doctor.set_defaults(func=command_doctor)
+
+    list_parser = subparsers.add_parser("list", help="List bundled skills, templates, or examples.")
+    list_parser.add_argument("kind", choices=sorted(RESOURCE_DIRS.keys()))
+    list_parser.set_defaults(func=command_list)
+
+    new_parser = subparsers.add_parser("new", help="Create a report scaffold from a template.")
+    new_parser.add_argument("kind", choices=sorted(TEMPLATE_MAP.keys()))
+    new_parser.add_argument("--output", "-o", help="Write scaffold to this Markdown file.")
+    new_parser.add_argument("--force", action="store_true", help="Overwrite output file if it exists.")
+    new_parser.set_defaults(func=command_new)
+
+    validate = subparsers.add_parser("validate", help="Validate a Markdown report structure.")
+    validate.add_argument("file", help="Markdown report to validate.")
+    validate.set_defaults(func=command_validate)
+
+    install = subparsers.add_parser("install", help="Install InvestFlow integrations.")
+    install.add_argument("target", choices=["codex"])
+    install.set_defaults(func=command_install)
+
+    return parser
+
+
+def main(argv=None):
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    return args.func(args)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

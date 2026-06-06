@@ -94,6 +94,23 @@ investflow/
 
 如果用户没有提供标的、周期、仓位和风险承受能力，Agent 应先补问，而不是直接给出投资判断。
 
+## CLI
+
+InvestFlow 提供一个轻量本地 CLI，用于报告搭建和结构校验：
+
+```bash
+./scripts/investflow --help
+./scripts/investflow doctor
+./scripts/investflow list skills
+./scripts/investflow new thesis --output work/thesis.md
+./scripts/investflow validate work/thesis.md
+./scripts/investflow install codex
+```
+
+CLI 不获取行情数据，不生成投资建议，也不执行交易。它只处理本地 skills、templates、examples 和 Markdown 报告。
+
+命令契约和验收标准见：[第二阶段 CLI 需求设计文档](docs/phase-2-cli-requirements.zh-CN.md)。
+
 ## 安装到 Codex
 
 将项目内置 skills 安装到 Codex 本地 skill 目录：
