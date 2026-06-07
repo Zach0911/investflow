@@ -2,11 +2,46 @@
 
 [English](README.md) | [中文](README.zh-CN.md)
 
+[![Validate](https://github.com/Zach0911/investflow/actions/workflows/validate.yml/badge.svg)](https://github.com/Zach0911/investflow/actions/workflows/validate.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/status-early%20MVP-blue.svg)](#project-status)
+
 InvestFlow is an open-source skills framework and research methodology for investment agents.
 
 It helps AI agents stop answering "should I buy this?" too early. Instead, agents must clarify the investment question, check the data basis, build a thesis, challenge it with risks, and produce a reviewable research output.
 
 InvestFlow is not investment advice. It does not execute trades, manage accounts, promise returns, or replace a licensed financial adviser.
+
+## Project Status
+
+InvestFlow is an early MVP with a working local toolchain:
+
+| Module | Status |
+|---|---|
+| Core skills | 8 skills for briefing, company research, thesis building, valuation, risk review, decision pressure-testing, and postmortem |
+| Report templates | 13 templates covering baseline reports and 10 Superpowers-inspired workflow scenarios |
+| Examples | 8 examples, including a complete thesis report, losing-position review, ETF review, portfolio review, and postmortem |
+| CLI | Generates, validates, audits, and renders reports; lists scenarios and local resources |
+| MCP | Local read-only baseline for listing data sources, reading sample data, and rendering reports |
+| Community packs | 1 sample pack with manifest validation |
+
+The current priority is investment-agent workflow infrastructure, not trading, stock picking, or live market-data aggregation.
+
+See [CHANGELOG.md](CHANGELOG.md) for release notes.
+
+## Who This Is For
+
+- Personal investors who want structured AI-assisted research records.
+- AI agent builders who need reusable investment research skills, CLI tools, and MCP hooks.
+- Research writers who want auditable, reviewable report templates.
+- Open-source contributors who want to add skills, examples, templates, and boundary tests.
+
+## What This Is Not
+
+- Not a stock recommendation tool.
+- Not an automated trading system.
+- Not a live market-data or financial terminal.
+- Not a substitute for licensed investment, tax, legal, or accounting advice.
 
 ## Why This Exists
 
@@ -49,6 +84,25 @@ InvestFlow is designed for investment research scenarios where an AI agent needs
 | Review a past decision | "Was this investment mistake avoidable?" | `postmortem` |
 
 These flows are research workflows, not trading commands. If current market data matters, the agent should verify and cite the data source and timestamp.
+
+### 10 Workflow Scenarios
+
+Inspired by Superpowers, InvestFlow now includes workflow scaffolds for investment agents:
+
+| Scenario | CLI Entry |
+|---|---|
+| Research design brief | `./scripts/investflow new design` |
+| Research execution plan | `./scripts/investflow new plan` |
+| Evidence-first audit | `./scripts/investflow audit report.md` |
+| Pre-conclusion decision gate | `./scripts/investflow new decision-gate` |
+| Multi-agent research handoff | `./scripts/investflow new multi-agent` |
+| Data-linked report brief | `./scripts/investflow new data-brief` |
+| Report lifecycle | `./scripts/investflow new lifecycle` |
+| Community skill pack proposal | `./scripts/investflow new pack-proposal` |
+| Platform adapter checklist | `./scripts/investflow new platform-adapter` |
+| Postmortem loop | `./scripts/investflow new postmortem-loop` |
+
+See [Scenario Overview](docs/scenarios.zh-CN.md) for details.
 
 ## Repository Layout
 
@@ -203,6 +257,18 @@ Every actionable label must include assumptions, position sizing, invalidation c
 - Phase 2: CLI for report scaffolding and validation.
 - Phase 3: MCP and read-only data connectors.
 - Phase 4: report generation and community skill packs.
+
+## Contributing
+
+Contributions are welcome:
+
+- New investment research skills.
+- New report templates or complete examples.
+- Community skill packs.
+- Stricter boundary tests.
+- Platform adapter documentation.
+
+Before contributing, read [CONTRIBUTING.md](CONTRIBUTING.md) and [Compliance Boundaries](docs/compliance-boundaries.md).
 
 ## License
 

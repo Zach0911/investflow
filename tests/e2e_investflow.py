@@ -54,6 +54,8 @@ def main() -> None:
     plugin = json.loads(read(".codex-plugin/plugin.json"))
     if plugin["name"] != "investflow":
         fail("plugin name must be investflow")
+    if plugin["version"] != "0.2.0":
+        fail("plugin version must be 0.2.0")
     if plugin.get("skills") != "./skills/":
         fail("plugin must expose ./skills/")
     if plugin.get("mcpServers") != "./.mcp.json":
@@ -61,11 +63,12 @@ def main() -> None:
     if "apps" in plugin:
         fail("plugin must not claim apps before those files exist")
 
-    require("README.md", r"skills framework", r"not investment advice", r"Use Cases", r"Review a losing position", r"portfolio concentration", r"\./scripts/investflow doctor", r"\./scripts/investflow quickstart", r"\./scripts/investflow scenario list", r"\./scripts/investflow audit", r"\./scripts/investflow data list", r"docs/cli\.md", r"docs/scenarios\.zh-CN\.md", r"full thesis report", r"MCP and Data Connectors", r"Phase 2 CLI Requirements", r"Decision Labels", r"Phase 2: CLI", r"Phase 3: MCP")
+    require("README.md", r"Project Status", r"CHANGELOG\.md", r"skills framework", r"not investment advice", r"Use Cases", r"Review a losing position", r"portfolio concentration", r"\./scripts/investflow doctor", r"\./scripts/investflow quickstart", r"\./scripts/investflow scenario list", r"\./scripts/investflow audit", r"\./scripts/investflow data list", r"docs/cli\.md", r"docs/scenarios\.zh-CN\.md", r"full thesis report", r"MCP and Data Connectors", r"Phase 2 CLI Requirements", r"Decision Labels", r"Phase 2: CLI", r"Phase 3: MCP")
     require("README.md", r"README\.zh-CN\.md")
     require("README.md", r"docs/installation\.md", r"run the installer again")
-    require("README.zh-CN.md", r"InvestFlow 是一个面向投资 Agent", r"不构成投资建议", r"核心 Skills", r"使用场景", r"复盘亏损持仓", r"组合集中度", r"\./scripts/investflow doctor", r"\./scripts/investflow quickstart", r"\./scripts/investflow scenario list", r"\./scripts/investflow audit", r"\./scripts/investflow data list", r"docs/cli\.zh-CN\.md", r"docs/scenarios\.zh-CN\.md", r"完整 thesis 报告", r"MCP 和只读数据连接器", r"第二阶段 CLI 需求设计文档", r"决策标签", r"README\.md")
+    require("README.zh-CN.md", r"项目状态", r"CHANGELOG\.md", r"InvestFlow 是一个面向投资 Agent", r"不构成投资建议", r"核心 Skills", r"使用场景", r"复盘亏损持仓", r"组合集中度", r"\./scripts/investflow doctor", r"\./scripts/investflow quickstart", r"\./scripts/investflow scenario list", r"\./scripts/investflow audit", r"\./scripts/investflow data list", r"docs/cli\.zh-CN\.md", r"docs/scenarios\.zh-CN\.md", r"完整 thesis 报告", r"MCP 和只读数据连接器", r"第二阶段 CLI 需求设计文档", r"决策标签", r"README\.md")
     require("README.zh-CN.md", r"docs/installation\.zh-CN\.md", r"重新运行安装脚本")
+    require("CHANGELOG.md", r"0\.2\.0", r"Superpowers-inspired", r"investflow audit")
     require("docs/installation.md", r"git clone https://github.com/Zach0911/investflow.git", r"The installer copies files", r"does not delete unrelated skills")
     require("docs/installation.zh-CN.md", r"安装脚本采用复制方式", r"不会删除", r"验证项目", r"使用 CLI")
     require("docs/phase-2-cli-requirements.zh-CN.md", r"investflow doctor", r"investflow quickstart", r"investflow scenario", r"investflow validate", r"investflow audit", r"验收标准")

@@ -1,7 +1,7 @@
 {
   "name": "investflow",
-  "version": "0.1.0",
-  "description": "Open-source skills framework and research methodology for investment agents.",
+  "version": "0.2.0",
+  "description": "Open-source skills framework, CLI, MCP, and research methodology for investment agents.",
   "author": {
     "name": "InvestFlow contributors"
   },
@@ -11,14 +11,17 @@
     "research",
     "skills",
     "agent",
-    "risk"
+    "risk",
+    "cli",
+    "mcp",
+    "workflow"
   ],
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "InvestFlow",
-    "shortDescription": "Investment research skills for AI agents.",
-    "longDescription": "InvestFlow helps investment agents clarify context, build theses, check valuation, review risks, and produce auditable research outputs without presenting standalone trading commands.",
+    "shortDescription": "Investment research workflow tools for AI agents.",
+    "longDescription": "InvestFlow helps investment agents clarify context, build research plans, construct theses, check valuation, review risks, audit evidence, and produce auditable research outputs without presenting standalone trading commands.",
     "developerName": "InvestFlow contributors",
     "category": "Finance",
     "capabilities": [
