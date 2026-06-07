@@ -79,15 +79,46 @@ investflow/
 └── tests/
 ```
 
-More complete examples are available in [`examples/`](examples/), including losing-position review, ETF long-term review, company-to-thesis research, and investment postmortems.
+More complete examples are available in [`examples/`](examples/), including a full thesis report, losing-position review, ETF long-term review, company-to-thesis research, and investment postmortems.
 
 ## Quick Start
+
+Run the local workflow first:
+
+```bash
+git clone https://github.com/Zach0911/investflow.git
+cd investflow
+./scripts/investflow quickstart
+```
+
+This creates:
+
+```text
+work/quickstart/thesis.md
+work/quickstart/thesis.html
+```
+
+Then validate and render:
+
+```bash
+./scripts/investflow validate work/quickstart/thesis.md
+./scripts/investflow render work/quickstart/thesis.md --output work/quickstart/thesis.html
+```
+
+For a more complete report example, read:
+
+```text
+examples/full-thesis-report-example.zh-CN.md
+```
+
+When an agent uses InvestFlow, the recommended flow is:
 
 1. Pick the skill that matches the task.
 2. Read that skill's `SKILL.md`.
 3. Ask the required boundary questions before producing investment analysis.
 4. Use templates from `templates/` for the final output.
-5. If current market data is required, cite the data source and timestamp.
+5. Validate the report with the CLI.
+6. If current market data is required, cite the data source and timestamp.
 
 Example prompt:
 
@@ -104,6 +135,7 @@ InvestFlow includes a lightweight local CLI for report scaffolding and validatio
 ```bash
 ./scripts/investflow --help
 ./scripts/investflow doctor
+./scripts/investflow quickstart
 ./scripts/investflow list skills
 ./scripts/investflow new thesis --output work/thesis.md
 ./scripts/investflow validate work/thesis.md
@@ -116,6 +148,7 @@ InvestFlow includes a lightweight local CLI for report scaffolding and validatio
 
 The CLI does not fetch market data, generate investment advice, or execute trades. It only works with local skills, templates, examples, and Markdown reports.
 
+See the [CLI Guide](docs/cli.md) for the full workflow.
 See [Phase 2 CLI Requirements](docs/phase-2-cli-requirements.zh-CN.md) for command contracts and acceptance criteria.
 See [Phase 3 MCP/Data Requirements](docs/phase-3-mcp-data-requirements.zh-CN.md) and [Phase 4 Report/Community Requirements](docs/phase-4-report-community-requirements.zh-CN.md) for the read-only data, MCP, report rendering, and community pack boundaries.
 

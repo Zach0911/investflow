@@ -33,6 +33,7 @@ class InvestFlowCliTest(unittest.TestCase):
     def test_help_lists_core_commands(self):
         result = self.run_cli("--help")
         self.assertIn("doctor", result.stdout)
+        self.assertIn("quickstart", result.stdout)
         self.assertIn("list", result.stdout)
         self.assertIn("new", result.stdout)
         self.assertIn("validate", result.stdout)
@@ -58,6 +59,33 @@ class InvestFlowCliTest(unittest.TestCase):
         payload = json.loads(result.stdout)
         self.assertIn("templates/thesis-report.md", payload["items"])
         self.assertIn("templates/risk-review.md", payload["items"])
+
+    def test_quickstart_creates_markdown_and_html_demo(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp) / "quickstart"
+            result = self.run_cli("quickstart", "--output-dir", str(output_dir))
+            self.assertIn("InvestFlow quickstart created", result.stdout)
+            markdown = output_dir / "thesis.md"
+            html_report = output_dir / "thesis.html"
+            self.assertTrue(markdown.exists())
+            self.assertTrue(html_report.exists())
+            self.assertIn("## 投资判断", markdown.read_text(encoding="utf-8"))
+            self.assertIn("<!doctype html>", html_report.read_text(encoding="utf-8"))
+
+            second = self.run_cli("quickstart", "--output-dir", str(output_dir), check=False)
+            self.assertNotEqual(second.returncode, 0)
+            self.assertIn("Refusing to overwrite", second.stderr)
+
+    def test_json_quickstart_reports_outputs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp) / "quickstart"
+            result = self.run_cli("--json", "quickstart", "--output-dir", str(output_dir))
+            payload = json.loads(result.stdout)
+            self.assertTrue(payload["ok"])
+            self.assertEqual(payload["missing"], [])
+            self.assertEqual(payload["violations"], [])
+            self.assertTrue(Path(payload["markdown"]).exists())
+            self.assertTrue(Path(payload["html"]).exists())
 
     def test_new_thesis_writes_report_and_refuses_overwrite(self):
         with tempfile.TemporaryDirectory() as tmp:

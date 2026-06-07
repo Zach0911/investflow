@@ -79,15 +79,46 @@ investflow/
 └── tests/
 ```
 
-更多完整示例见 [`examples/`](examples/)，包括亏损持仓复盘、ETF 长期持有审查、公司研究到 thesis、投资复盘等。
+更多完整示例见 [`examples/`](examples/)，包括完整 thesis 报告、亏损持仓复盘、ETF 长期持有审查、公司研究到 thesis、投资复盘等。
 
 ## 快速开始
+
+先在本地跑通一次完整链路：
+
+```bash
+git clone https://github.com/Zach0911/investflow.git
+cd investflow
+./scripts/investflow quickstart
+```
+
+该命令会生成：
+
+```text
+work/quickstart/thesis.md
+work/quickstart/thesis.html
+```
+
+然后可以继续校验和渲染：
+
+```bash
+./scripts/investflow validate work/quickstart/thesis.md
+./scripts/investflow render work/quickstart/thesis.md --output work/quickstart/thesis.html
+```
+
+如果你想直接看一份更完整的报告示例，可以阅读：
+
+```text
+examples/full-thesis-report-example.zh-CN.md
+```
+
+Agent 使用 InvestFlow 时，推荐流程是：
 
 1. 选择与任务匹配的 skill。
 2. 阅读对应的 `SKILL.md`。
 3. 在输出投资分析前，先询问必要的边界问题。
 4. 使用 `templates/` 中的模板整理最终输出。
-5. 如果判断依赖当前市场数据，需要注明数据来源和时间。
+5. 使用 CLI 校验报告结构。
+6. 如果判断依赖当前市场数据，需要注明数据来源和时间。
 
 示例 prompt：
 
@@ -104,6 +135,7 @@ InvestFlow 提供一个轻量本地 CLI，用于报告搭建和结构校验：
 ```bash
 ./scripts/investflow --help
 ./scripts/investflow doctor
+./scripts/investflow quickstart
 ./scripts/investflow list skills
 ./scripts/investflow new thesis --output work/thesis.md
 ./scripts/investflow validate work/thesis.md
@@ -116,6 +148,7 @@ InvestFlow 提供一个轻量本地 CLI，用于报告搭建和结构校验：
 
 CLI 不获取行情数据，不生成投资建议，也不执行交易。它只处理本地 skills、templates、examples 和 Markdown 报告。
 
+完整 CLI 用法见：[CLI 使用指南](docs/cli.zh-CN.md)。
 命令契约和验收标准见：[第二阶段 CLI 需求设计文档](docs/phase-2-cli-requirements.zh-CN.md)。
 只读数据、MCP、报告生成和社区包边界见：[第三阶段 MCP 与只读数据连接器需求设计文档](docs/phase-3-mcp-data-requirements.zh-CN.md) 与 [第四阶段报告生成与社区技能包需求设计文档](docs/phase-4-report-community-requirements.zh-CN.md)。
 

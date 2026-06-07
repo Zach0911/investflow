@@ -61,14 +61,16 @@ def main() -> None:
     if "apps" in plugin:
         fail("plugin must not claim apps before those files exist")
 
-    require("README.md", r"skills framework", r"not investment advice", r"Use Cases", r"Review a losing position", r"portfolio concentration", r"\./scripts/investflow doctor", r"\./scripts/investflow data list", r"MCP and Data Connectors", r"Phase 2 CLI Requirements", r"Decision Labels", r"Phase 2: CLI", r"Phase 3: MCP")
+    require("README.md", r"skills framework", r"not investment advice", r"Use Cases", r"Review a losing position", r"portfolio concentration", r"\./scripts/investflow doctor", r"\./scripts/investflow quickstart", r"\./scripts/investflow data list", r"docs/cli\.md", r"full thesis report", r"MCP and Data Connectors", r"Phase 2 CLI Requirements", r"Decision Labels", r"Phase 2: CLI", r"Phase 3: MCP")
     require("README.md", r"README\.zh-CN\.md")
     require("README.md", r"docs/installation\.md", r"run the installer again")
-    require("README.zh-CN.md", r"InvestFlow 是一个面向投资 Agent", r"不构成投资建议", r"核心 Skills", r"使用场景", r"复盘亏损持仓", r"组合集中度", r"\./scripts/investflow doctor", r"\./scripts/investflow data list", r"MCP 和只读数据连接器", r"第二阶段 CLI 需求设计文档", r"决策标签", r"README\.md")
+    require("README.zh-CN.md", r"InvestFlow 是一个面向投资 Agent", r"不构成投资建议", r"核心 Skills", r"使用场景", r"复盘亏损持仓", r"组合集中度", r"\./scripts/investflow doctor", r"\./scripts/investflow quickstart", r"\./scripts/investflow data list", r"docs/cli\.zh-CN\.md", r"完整 thesis 报告", r"MCP 和只读数据连接器", r"第二阶段 CLI 需求设计文档", r"决策标签", r"README\.md")
     require("README.zh-CN.md", r"docs/installation\.zh-CN\.md", r"重新运行安装脚本")
     require("docs/installation.md", r"git clone https://github.com/Zach0911/investflow.git", r"The installer copies files", r"does not delete unrelated skills")
     require("docs/installation.zh-CN.md", r"安装脚本采用复制方式", r"不会删除", r"验证项目", r"使用 CLI")
-    require("docs/phase-2-cli-requirements.zh-CN.md", r"investflow doctor", r"investflow validate", r"验收标准")
+    require("docs/phase-2-cli-requirements.zh-CN.md", r"investflow doctor", r"investflow quickstart", r"investflow validate", r"验收标准")
+    require("docs/cli.md", r"Three-Minute Quick Start", r"Common Commands", r"JSON Output")
+    require("docs/cli.zh-CN.md", r"三分钟跑通", r"常用命令", r"JSON 输出")
     require("docs/phase-3-mcp-data-requirements.zh-CN.md", r"investflow data read", r"scripts/investflow-mcp", r"验收标准")
     require("docs/phase-4-report-community-requirements.zh-CN.md", r"investflow render", r"pack validate", r"验收标准")
     require(".mcp.json", r"investflow", r"scripts/investflow-mcp")
@@ -130,6 +132,7 @@ def main() -> None:
         "examples/company-to-thesis-example.md": ["Company Research to Thesis", "核心 Thesis", "失效条件"],
         "examples/etf-long-term-review-example.md": ["ETF Long-Term Review", "持仓集中度", "复盘条件"],
         "examples/investment-postmortem-example.md": ["Investment Postmortem", "错误来源", "下次行动规则"],
+        "examples/full-thesis-report-example.zh-CN.md": ["完整 Thesis 报告示例", "投资判断", "反方最强质疑", "仓位与风控"],
         "tests/skill-boundary-cases.md": ["Case 1", "Case 2", "Case 3", "Expected behavior"],
         "tests/e2e-scenarios.md": ["Vague stock question", "Actionable decision", "Past decision review"],
     }

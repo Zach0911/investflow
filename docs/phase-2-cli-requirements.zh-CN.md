@@ -11,6 +11,7 @@ CLI 的目标是：
 - 快速查看项目内置 skills、templates、examples。
 - 基于模板生成报告骨架。
 - 校验 Markdown 报告是否包含必要结构。
+- 提供一条命令的 quickstart，本地生成可校验、可渲染的示例报告。
 - 调用现有安装脚本，同步 Codex skills。
 - 提供 `doctor` 命令检查项目状态。
 
@@ -60,7 +61,33 @@ JSON 输出示例：
 }
 ```
 
-### 4.2 `investflow list`
+### 4.2 `investflow quickstart`
+
+快速生成本地示例报告，帮助新用户跑通报告搭建、校验和渲染链路。
+
+输入：
+
+```bash
+./scripts/investflow quickstart
+./scripts/investflow quickstart --output-dir work/demo
+./scripts/investflow quickstart --force
+./scripts/investflow --json quickstart --output-dir work/demo
+```
+
+输出：
+
+- `thesis.md`：基于 thesis 模板生成的 Markdown 报告。
+- `thesis.html`：由 Markdown 渲染出的 HTML 报告。
+- 后续可执行命令提示。
+
+规则：
+
+- 默认输出到 `work/quickstart`。
+- 如果目标文件已存在，默认拒绝覆盖。
+- 使用 `--force` 才允许覆盖。
+- JSON 模式输出生成文件路径、校验结果和后续命令。
+
+### 4.3 `investflow list`
 
 查看可用资源。
 
@@ -79,7 +106,7 @@ JSON 输出示例：
 - `templates`：列出模板文件。
 - `examples`：列出示例文件。
 
-### 4.3 `investflow new`
+### 4.4 `investflow new`
 
 基于模板生成报告骨架。
 
@@ -98,7 +125,7 @@ JSON 输出示例：
 - 使用 `--force` 才允许覆盖。
 - 不传 `--output` 时输出到 stdout。
 
-### 4.4 `investflow validate`
+### 4.5 `investflow validate`
 
 校验 Markdown 报告结构。
 
@@ -129,7 +156,7 @@ JSON 输出示例：
 }
 ```
 
-### 4.5 `investflow install codex`
+### 4.6 `investflow install codex`
 
 调用现有安装脚本，将 skills 同步到 Codex。
 
@@ -161,6 +188,9 @@ CLI 必须遵守：
 - `./scripts/investflow --help` 可用。
 - `./scripts/investflow doctor` 可用。
 - `./scripts/investflow --json doctor` 输出稳定 JSON。
+- `quickstart` 可生成 `thesis.md` 和 `thesis.html`。
+- `quickstart` 默认不覆盖已有文件。
+- `--json quickstart` 输出稳定 JSON。
 - `list skills/templates/examples` 可用。
 - `new brief/thesis/risk-review/postmortem` 可输出模板。
 - `new ... --output` 可写文件，且默认不覆盖已有文件。
