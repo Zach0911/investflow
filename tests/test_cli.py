@@ -34,9 +34,11 @@ class InvestFlowCliTest(unittest.TestCase):
         result = self.run_cli("--help")
         self.assertIn("doctor", result.stdout)
         self.assertIn("quickstart", result.stdout)
+        self.assertIn("scenario", result.stdout)
         self.assertIn("list", result.stdout)
         self.assertIn("new", result.stdout)
         self.assertIn("validate", result.stdout)
+        self.assertIn("audit", result.stdout)
         self.assertIn("install", result.stdout)
 
     def test_json_doctor_reports_project_inventory(self):
@@ -44,7 +46,7 @@ class InvestFlowCliTest(unittest.TestCase):
         payload = json.loads(result.stdout)
         self.assertTrue(payload["ok"])
         self.assertEqual(payload["skills"], 8)
-        self.assertGreaterEqual(payload["templates"], 4)
+        self.assertGreaterEqual(payload["templates"], 13)
         self.assertGreaterEqual(payload["examples"], 7)
         self.assertTrue(payload["plugin_manifest"])
         self.assertTrue(payload["codex_installer"])
@@ -59,6 +61,41 @@ class InvestFlowCliTest(unittest.TestCase):
         payload = json.loads(result.stdout)
         self.assertIn("templates/thesis-report.md", payload["items"])
         self.assertIn("templates/risk-review.md", payload["items"])
+        self.assertIn("templates/research-design.md", payload["items"])
+        self.assertIn("templates/research-plan.md", payload["items"])
+        self.assertIn("templates/decision-gate.md", payload["items"])
+
+    def test_scenario_list_and_show(self):
+        listed = self.run_cli("--json", "scenario", "list")
+        payload = json.loads(listed.stdout)
+        self.assertEqual(len(payload["scenarios"]), 10)
+        scenario_ids = [item["id"] for item in payload["scenarios"]]
+        self.assertIn("research-design", scenario_ids)
+        self.assertIn("evidence-audit", scenario_ids)
+        self.assertIn("postmortem-loop", scenario_ids)
+
+        shown = self.run_cli("--json", "scenario", "show", "research-design")
+        detail = json.loads(shown.stdout)
+        self.assertTrue(detail["ok"])
+        self.assertEqual(detail["command"], "investflow new design")
+        self.assertIn("2026-06-07-research-design.md", detail["plan"])
+
+    def test_new_superpowers_inspired_templates_stdout(self):
+        cases = {
+            "design": "# 投资研究任务书",
+            "plan": "# 投研执行计划",
+            "decision-gate": "# 结论前检查",
+            "multi-agent": "# 多 Agent 投研分工",
+            "data-brief": "# 数据到报告联动",
+            "lifecycle": "# 报告生命周期",
+            "pack-proposal": "# 社区 Skill Pack 提案",
+            "platform-adapter": "# 平台适配清单",
+            "postmortem-loop": "# 投资复盘闭环",
+        }
+        for template_name, heading in cases.items():
+            with self.subTest(template_name=template_name):
+                result = self.run_cli("new", template_name)
+                self.assertIn(heading, result.stdout)
 
     def test_quickstart_creates_markdown_and_html_demo(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -152,6 +189,37 @@ class InvestFlowCliTest(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             payload = json.loads(result.stdout)
             self.assertIn("standalone buy/sell conclusion", payload["violations"])
+
+    def test_audit_full_example_passes_json(self):
+        result = self.run_cli("--json", "audit", "examples/full-thesis-report-example.zh-CN.md")
+        payload = json.loads(result.stdout)
+        self.assertTrue(payload["ok"])
+        self.assertEqual(payload["missing"], [])
+        self.assertEqual(payload["warnings"], [])
+
+    def test_audit_missing_evidence_fails(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            report = Path(tmp) / "thin.md"
+            report.write_text(
+                "\n".join(
+                    [
+                        "## 投资判断",
+                        "谨慎观察",
+                        "## 反方最强质疑",
+                        "- x",
+                        "## 仓位与风控",
+                        "- x",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            result = self.run_cli("--json", "audit", str(report), check=False)
+            self.assertNotEqual(result.returncode, 0)
+            payload = json.loads(result.stdout)
+            self.assertFalse(payload["ok"])
+            self.assertIn("data source", payload["missing"])
+            self.assertIn("data timestamp", payload["missing"])
+            self.assertIn("invalidation condition", payload["missing"])
 
     def test_install_codex_uses_target_env(self):
         with tempfile.TemporaryDirectory() as tmp:

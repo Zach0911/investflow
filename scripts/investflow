@@ -23,9 +23,18 @@ PACKS_DIR = ROOT / "packs" / "community"
 
 TEMPLATE_MAP = {
     "brief": "research-brief.md",
-    "thesis": "thesis-report.md",
-    "risk-review": "risk-review.md",
+    "data-brief": "data-linked-brief.md",
+    "decision-gate": "decision-gate.md",
+    "design": "research-design.md",
+    "lifecycle": "report-lifecycle.md",
+    "multi-agent": "multi-agent-research.md",
     "postmortem": "postmortem.md",
+    "postmortem-loop": "postmortem-loop.md",
+    "pack-proposal": "community-pack-proposal.md",
+    "plan": "research-plan.md",
+    "platform-adapter": "platform-adapter-checklist.md",
+    "risk-review": "risk-review.md",
+    "thesis": "thesis-report.md",
 }
 
 REQUIRED_REPORT_SECTIONS = [
@@ -35,6 +44,69 @@ REQUIRED_REPORT_SECTIONS = [
     "## 主要风险",
     "## 仓位与风控",
     "## 最终结论",
+]
+
+SCENARIOS = [
+    {
+        "id": "research-design",
+        "name": "投资研究任务书",
+        "command": "investflow new design",
+        "plan": "docs/superpowers/plans/2026-06-07-research-design.md",
+    },
+    {
+        "id": "research-plan",
+        "name": "投研执行计划",
+        "command": "investflow new plan",
+        "plan": "docs/superpowers/plans/2026-06-07-research-plan.md",
+    },
+    {
+        "id": "evidence-audit",
+        "name": "证据优先审计",
+        "command": "investflow audit <report.md>",
+        "plan": "docs/superpowers/plans/2026-06-07-evidence-audit.md",
+    },
+    {
+        "id": "decision-gate",
+        "name": "结论前强制反方审查",
+        "command": "investflow new decision-gate",
+        "plan": "docs/superpowers/plans/2026-06-07-decision-gate.md",
+    },
+    {
+        "id": "multi-agent-research",
+        "name": "多 Agent 分工研究",
+        "command": "investflow new multi-agent",
+        "plan": "docs/superpowers/plans/2026-06-07-multi-agent-research.md",
+    },
+    {
+        "id": "data-linked-report",
+        "name": "数据到报告联动",
+        "command": "investflow new data-brief",
+        "plan": "docs/superpowers/plans/2026-06-07-data-linked-report.md",
+    },
+    {
+        "id": "report-lifecycle",
+        "name": "报告生命周期",
+        "command": "investflow new lifecycle",
+        "plan": "docs/superpowers/plans/2026-06-07-report-lifecycle.md",
+    },
+    {
+        "id": "community-pack-contribution",
+        "name": "社区 skill pack 贡献",
+        "command": "investflow new pack-proposal",
+        "plan": "docs/superpowers/plans/2026-06-07-community-pack-contribution.md",
+    },
+    {
+        "id": "platform-adapters",
+        "name": "多平台适配",
+        "command": "investflow new platform-adapter",
+        "plan": "docs/superpowers/plans/2026-06-07-platform-adapters.md",
+    },
+    {
+        "id": "postmortem-loop",
+        "name": "投资复盘闭环",
+        "command": "investflow new postmortem-loop",
+        "plan": "docs/superpowers/plans/2026-06-07-postmortem-loop.md",
+    },
 ]
 
 
@@ -155,6 +227,26 @@ def validate_report_text(text):
     return missing, violations
 
 
+def audit_report_text(text):
+    checks = [
+        ("data source", [r"数据来源", r"来源", r"\bsource\b"]),
+        ("data timestamp", [r"时间戳", r"截至", r"\bas of\b", r"\bas_of\b"]),
+        ("strongest contrarian view", [r"反方最强质疑"]),
+        ("invalidation condition", [r"失效条件", r"\binvalidation\b"]),
+        ("review trigger", [r"复盘条件", r"复盘触发", r"\breview trigger\b"]),
+        ("position boundary", [r"仓位", r"\bposition\b"]),
+    ]
+    missing = []
+    for label, patterns in checks:
+        if not any(re.search(pattern, text, re.IGNORECASE) for pattern in patterns):
+            missing.append(label)
+
+    warnings = []
+    if find_standalone_buy_sell(text):
+        warnings.append("standalone buy/sell conclusion")
+    return missing, warnings
+
+
 def render_report_to_html(markdown, source_name):
     generated_at = datetime.now(timezone.utc).isoformat()
     body = markdown_to_html(markdown)
@@ -241,7 +333,7 @@ def command_doctor(args):
     payload["ok"] = all(
         [
             payload["skills"] >= 8,
-            payload["templates"] >= 4,
+            payload["templates"] >= 13,
             payload["examples"] >= 7,
             payload["plugin_manifest"],
             payload["codex_installer"],
@@ -276,6 +368,36 @@ def command_list(args):
     else:
         for item in items:
             print(item)
+    return 0
+
+
+def command_scenario_list(args):
+    if args.json:
+        print_json({"scenarios": SCENARIOS})
+    else:
+        for scenario in SCENARIOS:
+            print(f"{scenario['id']}\t{scenario['name']}\t{scenario['command']}")
+    return 0
+
+
+def command_scenario_show(args):
+    scenario = next((item for item in SCENARIOS if item["id"] == args.scenario_id), None)
+    if not scenario:
+        payload = {"ok": False, "error": "unknown scenario", "scenario_id": args.scenario_id}
+        if args.json:
+            print_json(payload)
+        else:
+            print(f"Unknown scenario: {args.scenario_id}", file=sys.stderr)
+        return 1
+
+    payload = {"ok": True, **scenario}
+    if args.json:
+        print_json(payload)
+    else:
+        print(f"id: {scenario['id']}")
+        print(f"name: {scenario['name']}")
+        print(f"command: {scenario['command']}")
+        print(f"plan: {scenario['plan']}")
     return 0
 
 
@@ -401,6 +523,40 @@ def command_validate(args):
                 print(f"missing: {section}")
             for violation in violations:
                 print(f"violation: {violation}")
+
+    return 0 if payload["ok"] else 1
+
+
+def command_audit(args):
+    report = Path(args.file)
+    if not report.exists():
+        payload = {"ok": False, "file": str(report), "missing": [], "warnings": ["file not found"]}
+        if args.json:
+            print_json(payload)
+        else:
+            print(f"Missing file: {report}", file=sys.stderr)
+        return 1
+
+    text = report.read_text(encoding="utf-8")
+    missing, warnings = audit_report_text(text)
+    payload = {
+        "ok": not missing and not warnings,
+        "file": str(report),
+        "missing": missing,
+        "warnings": warnings,
+    }
+
+    if args.json:
+        print_json(payload)
+    else:
+        if payload["ok"]:
+            print(f"Evidence audit passed: {report}")
+        else:
+            print(f"Evidence audit failed: {report}")
+            for item in missing:
+                print(f"missing: {item}")
+            for warning in warnings:
+                print(f"warning: {warning}")
 
     return 0 if payload["ok"] else 1
 
@@ -534,6 +690,14 @@ def build_parser():
     list_parser.add_argument("kind", choices=sorted(RESOURCE_DIRS.keys()))
     list_parser.set_defaults(func=command_list)
 
+    scenario = subparsers.add_parser("scenario", help="List or show InvestFlow optimization scenarios.")
+    scenario_subparsers = scenario.add_subparsers(dest="scenario_command", required=True)
+    scenario_list = scenario_subparsers.add_parser("list", help="List supported scenarios.")
+    scenario_list.set_defaults(func=command_scenario_list)
+    scenario_show = scenario_subparsers.add_parser("show", help="Show scenario details.")
+    scenario_show.add_argument("scenario_id")
+    scenario_show.set_defaults(func=command_scenario_show)
+
     new_parser = subparsers.add_parser("new", help="Create a report scaffold from a template.")
     new_parser.add_argument("kind", choices=sorted(TEMPLATE_MAP.keys()))
     new_parser.add_argument("--output", "-o", help="Write scaffold to this Markdown file.")
@@ -543,6 +707,10 @@ def build_parser():
     validate = subparsers.add_parser("validate", help="Validate a Markdown report structure.")
     validate.add_argument("file", help="Markdown report to validate.")
     validate.set_defaults(func=command_validate)
+
+    audit = subparsers.add_parser("audit", help="Audit evidence and decision hygiene in a Markdown report.")
+    audit.add_argument("file", help="Markdown report to audit.")
+    audit.set_defaults(func=command_audit)
 
     install = subparsers.add_parser("install", help="Install InvestFlow integrations.")
     install.add_argument("target", choices=["codex"])

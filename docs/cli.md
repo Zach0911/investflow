@@ -36,11 +36,14 @@ Use a custom output directory:
 | Command | Purpose |
 |---|---|
 | `./scripts/investflow doctor` | Check project structure, skills, templates, MCP, and community packs. |
+| `./scripts/investflow scenario list` | List the 10 Superpowers-inspired optimization scenarios. |
+| `./scripts/investflow scenario show evidence-audit` | Show a scenario command and plan document. |
 | `./scripts/investflow list skills` | List bundled skills. |
 | `./scripts/investflow list templates` | List report templates. |
 | `./scripts/investflow list examples` | List examples. |
 | `./scripts/investflow new thesis --output work/thesis.md` | Create a thesis report scaffold. |
 | `./scripts/investflow validate work/thesis.md` | Validate required report sections and boundaries. |
+| `./scripts/investflow audit work/thesis.md` | Audit data sources, timestamps, contrarian view, invalidation, and review triggers. |
 | `./scripts/investflow render work/thesis.md --output work/thesis.html` | Render a Markdown report to HTML. |
 | `./scripts/investflow data list` | List registered read-only data sources. |
 | `./scripts/investflow data read sample-market-snapshot` | Read a sample data source. |
@@ -58,9 +61,18 @@ Use a custom output directory:
 Other templates:
 
 ```bash
+./scripts/investflow new design --output work/research-design.md
+./scripts/investflow new plan --output work/research-plan.md
 ./scripts/investflow new brief --output work/research-brief.md
 ./scripts/investflow new risk-review --output work/risk-review.md
+./scripts/investflow new decision-gate --output work/decision-gate.md
+./scripts/investflow new multi-agent --output work/multi-agent.md
+./scripts/investflow new data-brief --output work/data-brief.md
+./scripts/investflow new lifecycle --output work/lifecycle.md
+./scripts/investflow new pack-proposal --output work/pack-proposal.md
+./scripts/investflow new platform-adapter --output work/platform-adapter.md
 ./scripts/investflow new postmortem --output work/postmortem.md
+./scripts/investflow new postmortem-loop --output work/postmortem-loop.md
 ```
 
 ### 3.2 Fill the Report
@@ -82,7 +94,15 @@ Clarify:
 
 Validation checks required sections and prevents standalone `买入` / `卖出` title-style conclusions.
 
-### 3.4 Render
+### 3.4 Audit Evidence
+
+```bash
+./scripts/investflow audit work/my-thesis.md
+```
+
+The audit checks data source, timestamp, strongest contrarian view, invalidation conditions, review triggers, and position boundaries.
+
+### 3.5 Render
 
 ```bash
 ./scripts/investflow render work/my-thesis.md --output work/my-thesis.html
@@ -102,10 +122,26 @@ Use JSON output from scripts, agents, or MCP tooling:
 ./scripts/investflow --json doctor
 ./scripts/investflow --json quickstart --output-dir work/demo
 ./scripts/investflow --json validate work/my-thesis.md
+./scripts/investflow --json audit work/my-thesis.md
+./scripts/investflow --json scenario list
 ./scripts/investflow --json list skills
 ```
 
-## 5. Complete Example
+## 5. Scenario Discovery
+
+List all scenarios:
+
+```bash
+./scripts/investflow scenario list
+```
+
+Show one scenario:
+
+```bash
+./scripts/investflow scenario show research-design
+```
+
+## 6. Complete Example
 
 Read the complete example report:
 

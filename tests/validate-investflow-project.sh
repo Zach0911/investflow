@@ -47,6 +47,17 @@ need_file "docs/phase-3-mcp-data-requirements.zh-CN.md"
 need_file "docs/phase-4-report-community-requirements.zh-CN.md"
 need_file "docs/cli.md"
 need_file "docs/cli.zh-CN.md"
+need_file "docs/scenarios.zh-CN.md"
+need_file "docs/superpowers/plans/2026-06-07-research-design.md"
+need_file "docs/superpowers/plans/2026-06-07-research-plan.md"
+need_file "docs/superpowers/plans/2026-06-07-evidence-audit.md"
+need_file "docs/superpowers/plans/2026-06-07-decision-gate.md"
+need_file "docs/superpowers/plans/2026-06-07-multi-agent-research.md"
+need_file "docs/superpowers/plans/2026-06-07-data-linked-report.md"
+need_file "docs/superpowers/plans/2026-06-07-report-lifecycle.md"
+need_file "docs/superpowers/plans/2026-06-07-community-pack-contribution.md"
+need_file "docs/superpowers/plans/2026-06-07-platform-adapters.md"
+need_file "docs/superpowers/plans/2026-06-07-postmortem-loop.md"
 need_file "data/sources.json"
 need_file "data/fixtures/sample-market-snapshot.json"
 need_file "data/fixtures/sample-company-profile.json"
@@ -86,6 +97,9 @@ need_text "README.md" "README.zh-CN.md"
 need_text "README.md" "docs/installation.md"
 need_text "README.md" "./scripts/investflow doctor"
 need_text "README.md" "./scripts/investflow quickstart"
+need_text "README.md" "./scripts/investflow scenario list"
+need_text "README.md" "./scripts/investflow audit"
+need_text "README.md" "docs/scenarios.zh-CN.md"
 need_text "README.md" "./scripts/investflow data list"
 need_text "README.md" "docs/cli.md"
 need_text "README.md" "full thesis report"
@@ -104,6 +118,9 @@ need_text "README.zh-CN.md" "README.md"
 need_text "README.zh-CN.md" "docs/installation.zh-CN.md"
 need_text "README.zh-CN.md" "./scripts/investflow doctor"
 need_text "README.zh-CN.md" "./scripts/investflow quickstart"
+need_text "README.zh-CN.md" "./scripts/investflow scenario list"
+need_text "README.zh-CN.md" "./scripts/investflow audit"
+need_text "README.zh-CN.md" "docs/scenarios.zh-CN.md"
 need_text "README.zh-CN.md" "./scripts/investflow data list"
 need_text "README.zh-CN.md" "docs/cli.zh-CN.md"
 need_text "README.zh-CN.md" "完整 thesis 报告"
@@ -111,10 +128,19 @@ need_text "README.zh-CN.md" "MCP 和只读数据连接器"
 need_text "README.zh-CN.md" "第二阶段 CLI 需求设计文档"
 need_text "docs/phase-2-cli-requirements.zh-CN.md" "investflow doctor"
 need_text "docs/phase-2-cli-requirements.zh-CN.md" "investflow quickstart"
+need_text "docs/phase-2-cli-requirements.zh-CN.md" "investflow scenario"
 need_text "docs/phase-2-cli-requirements.zh-CN.md" "investflow validate"
+need_text "docs/phase-2-cli-requirements.zh-CN.md" "investflow audit"
 need_text "docs/phase-2-cli-requirements.zh-CN.md" "验收标准"
 need_text "docs/cli.md" "Three-Minute Quick Start"
+need_text "docs/cli.md" "Scenario Discovery"
 need_text "docs/cli.zh-CN.md" "三分钟跑通"
+need_text "docs/cli.zh-CN.md" "场景发现"
+need_text "docs/scenarios.zh-CN.md" "投资研究任务书"
+need_text "docs/scenarios.zh-CN.md" "证据优先审计"
+need_text "docs/scenarios.zh-CN.md" "投资复盘闭环"
+need_text "docs/platform-adapters.md" "Current Support"
+need_text "packs/community/README.md" "Contribution Flow"
 need_text "docs/phase-3-mcp-data-requirements.zh-CN.md" "investflow data read"
 need_text "docs/phase-3-mcp-data-requirements.zh-CN.md" "scripts/investflow-mcp"
 need_text "docs/phase-4-report-community-requirements.zh-CN.md" "investflow render"
@@ -152,6 +178,24 @@ need_text "examples/etf-long-term-review-example.md" "ETF Long-Term Review"
 need_text "examples/investment-postmortem-example.md" "Investment Postmortem"
 need_text "examples/full-thesis-report-example.zh-CN.md" "完整 Thesis 报告示例"
 need_text "examples/full-thesis-report-example.zh-CN.md" "反方最强质疑"
+need_text "examples/full-thesis-report-example.zh-CN.md" "数据来源"
+need_text "examples/full-thesis-report-example.zh-CN.md" "失效条件"
 need_text "tests/skill-boundary-cases.md" "expected behavior"
+
+scenario_templates=(
+  research-design.md
+  research-plan.md
+  decision-gate.md
+  multi-agent-research.md
+  data-linked-brief.md
+  report-lifecycle.md
+  community-pack-proposal.md
+  platform-adapter-checklist.md
+  postmortem-loop.md
+)
+
+for template in "${scenario_templates[@]}"; do
+  need_file "templates/$template"
+done
 
 echo "InvestFlow project validation passed: $ROOT"

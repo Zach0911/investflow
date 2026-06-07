@@ -11,7 +11,9 @@ CLI 的目标是：
 - 快速查看项目内置 skills、templates、examples。
 - 基于模板生成报告骨架。
 - 校验 Markdown 报告是否包含必要结构。
+- 审计 Markdown 报告是否包含证据来源、时间戳、反方观点、失效条件和复盘条件。
 - 提供一条命令的 quickstart，本地生成可校验、可渲染的示例报告。
+- 提供场景发现命令，列出对标 Superpowers 的 10 个优化场景。
 - 调用现有安装脚本，同步 Codex skills。
 - 提供 `doctor` 命令检查项目状态。
 
@@ -106,7 +108,26 @@ JSON 输出示例：
 - `templates`：列出模板文件。
 - `examples`：列出示例文件。
 
-### 4.4 `investflow new`
+### 4.4 `investflow scenario`
+
+查看 InvestFlow 对标 Superpowers 的场景入口和计划文档。
+
+输入：
+
+```bash
+./scripts/investflow scenario list
+./scripts/investflow scenario show research-design
+./scripts/investflow --json scenario list
+```
+
+输出：
+
+- 场景 ID
+- 场景名称
+- 推荐命令
+- 对应计划文档
+
+### 4.5 `investflow new`
 
 基于模板生成报告骨架。
 
@@ -114,9 +135,18 @@ JSON 输出示例：
 
 ```bash
 ./scripts/investflow new brief --output work/research-brief.md
+./scripts/investflow new design --output work/research-design.md
+./scripts/investflow new plan --output work/research-plan.md
 ./scripts/investflow new thesis --output work/thesis.md
 ./scripts/investflow new risk-review --output work/risk-review.md
+./scripts/investflow new decision-gate --output work/decision-gate.md
+./scripts/investflow new multi-agent --output work/multi-agent.md
+./scripts/investflow new data-brief --output work/data-brief.md
+./scripts/investflow new lifecycle --output work/lifecycle.md
+./scripts/investflow new pack-proposal --output work/pack-proposal.md
+./scripts/investflow new platform-adapter --output work/platform-adapter.md
 ./scripts/investflow new postmortem --output work/postmortem.md
+./scripts/investflow new postmortem-loop --output work/postmortem-loop.md
 ```
 
 规则：
@@ -125,7 +155,7 @@ JSON 输出示例：
 - 使用 `--force` 才允许覆盖。
 - 不传 `--output` 时输出到 stdout。
 
-### 4.5 `investflow validate`
+### 4.6 `investflow validate`
 
 校验 Markdown 报告结构。
 
@@ -156,7 +186,27 @@ JSON 输出示例：
 }
 ```
 
-### 4.6 `investflow install codex`
+### 4.7 `investflow audit`
+
+审计 Markdown 报告的证据质量和决策边界。
+
+输入：
+
+```bash
+./scripts/investflow audit report.md
+./scripts/investflow --json audit report.md
+```
+
+校验内容：
+
+- 是否包含数据来源。
+- 是否包含数据时间戳或截至日期。
+- 是否包含反方最强质疑。
+- 是否包含失效条件。
+- 是否包含复盘条件。
+- 是否包含仓位边界。
+
+### 4.8 `investflow install codex`
 
 调用现有安装脚本，将 skills 同步到 Codex。
 
@@ -191,11 +241,13 @@ CLI 必须遵守：
 - `quickstart` 可生成 `thesis.md` 和 `thesis.html`。
 - `quickstart` 默认不覆盖已有文件。
 - `--json quickstart` 输出稳定 JSON。
+- `scenario list/show` 可列出 10 个场景和计划文档。
 - `list skills/templates/examples` 可用。
-- `new brief/thesis/risk-review/postmortem` 可输出模板。
+- `new brief/design/plan/thesis/risk-review/decision-gate/multi-agent/data-brief/lifecycle/pack-proposal/platform-adapter/postmortem/postmortem-loop` 可输出模板。
 - `new ... --output` 可写文件，且默认不覆盖已有文件。
 - `validate` 可识别缺失章节。
 - `validate` 可识别 standalone `买入` / `卖出` 结论。
+- `audit` 可识别缺失的数据来源、时间戳、失效条件和复盘条件。
 - `install codex` 可调用现有安装脚本。
 - `./scripts/validate.sh` 覆盖 CLI 测试。
 - GitHub Actions 自动运行 CLI 测试。

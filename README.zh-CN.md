@@ -136,9 +136,11 @@ InvestFlow 提供一个轻量本地 CLI，用于报告搭建和结构校验：
 ./scripts/investflow --help
 ./scripts/investflow doctor
 ./scripts/investflow quickstart
+./scripts/investflow scenario list
 ./scripts/investflow list skills
 ./scripts/investflow new thesis --output work/thesis.md
 ./scripts/investflow validate work/thesis.md
+./scripts/investflow audit work/thesis.md
 ./scripts/investflow data list
 ./scripts/investflow data read sample-market-snapshot
 ./scripts/investflow render work/thesis.md --output work/thesis.html
@@ -149,6 +151,7 @@ InvestFlow 提供一个轻量本地 CLI，用于报告搭建和结构校验：
 CLI 不获取行情数据，不生成投资建议，也不执行交易。它只处理本地 skills、templates、examples 和 Markdown 报告。
 
 完整 CLI 用法见：[CLI 使用指南](docs/cli.zh-CN.md)。
+10 个对标 Superpowers 的优化场景见：[使用场景总览](docs/scenarios.zh-CN.md)。
 命令契约和验收标准见：[第二阶段 CLI 需求设计文档](docs/phase-2-cli-requirements.zh-CN.md)。
 只读数据、MCP、报告生成和社区包边界见：[第三阶段 MCP 与只读数据连接器需求设计文档](docs/phase-3-mcp-data-requirements.zh-CN.md) 与 [第四阶段报告生成与社区技能包需求设计文档](docs/phase-4-report-community-requirements.zh-CN.md)。
 
